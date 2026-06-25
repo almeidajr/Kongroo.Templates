@@ -3,7 +3,9 @@
     <Project Path="src/Kongroo.SampleApp.Api/Kongroo.SampleApp.Api.csproj" />
   </Folder>
   <Folder Name="/test/">
+    <!--#if (integration-tests)-->
     <Project Path="test/Kongroo.SampleApp.IntegrationTests/Kongroo.SampleApp.IntegrationTests.csproj" />
+    <!--#endif-->
     <Project Path="test/Kongroo.SampleApp.UnitTests/Kongroo.SampleApp.UnitTests.csproj" />
   </Folder>
 </Solution>

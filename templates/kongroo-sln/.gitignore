@@ -1,0 +1,10 @@
+bin/
+obj/
+[Bb]in/
+[Oo]bj/
+*.user
+.vs/
+node_modules/
+*.nupkg
+*.snupkg
+TestResults/

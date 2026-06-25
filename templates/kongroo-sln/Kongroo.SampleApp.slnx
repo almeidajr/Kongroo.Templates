@@ -1,1 +1,5 @@
-<Solution></Solution>
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Kongroo.SampleApp.Api/Kongroo.SampleApp.Api.csproj" />
+  </Folder>
+</Solution>

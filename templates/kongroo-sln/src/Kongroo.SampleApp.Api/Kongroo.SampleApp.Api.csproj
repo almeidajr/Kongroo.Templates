@@ -1,9 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <AssemblyName>Kongroo.SampleApp.Api</AssemblyName>
-    <RootNamespace>Kongroo.SampleApp.Api</RootNamespace>
-    <Authors>Jose Junior &lt;almeidajr.vr@gmail.com&gt;</Authors>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <!-- ponytail: constant enables #if (observability) block so OTel code compiles and is validated; a later task makes this conditional via template engine -->
     <DefineConstants>$(DefineConstants);observability</DefineConstants>
   </PropertyGroup>

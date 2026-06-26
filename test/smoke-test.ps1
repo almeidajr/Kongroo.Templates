@@ -55,8 +55,8 @@ try {
     dotnet sln $slnx add test/Kongroo.Smoke.E2ETests/Kongroo.Smoke.E2ETests.csproj
     if ($LASTEXITCODE -ne 0) { throw 'sln add E2ETests failed' }
 
-    # 5. Build (--tl:off is safe on build)
-    dotnet build --tl:off -warnaserror
+    # 5. Build
+    dotnet build -warnaserror
     if ($LASTEXITCODE -ne 0) { throw 'build failed' }
 
     # 6. Test (plain — no --tl:off, breaks MTP discovery)

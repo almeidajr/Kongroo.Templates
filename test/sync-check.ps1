@@ -3,15 +3,15 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 
 # Only kongroo-api is a verbatim copy of the sln API; test/itest adders intentionally diverge.
-$apiSrc = Join-Path $root 'templates\kongroo-sln\src\Kongroo.SampleApp.Api'
-$apiAdder = Join-Path $root 'templates\kongroo-api'
+$apiSrc = Join-Path $root 'templates/kongroo-sln/src/Kongroo.SampleApp.Api'
+$apiAdder = Join-Path $root 'templates/kongroo-api'
 
 $files = @(
     'Kongroo.SampleApp.Api.csproj',
     'Program.cs',
     'appsettings.json',
     'appsettings.Development.json',
-    'Properties\launchSettings.json',
+    'Properties/launchSettings.json',
     'Dockerfile',
     '.dockerignore'
 )

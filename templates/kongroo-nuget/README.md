@@ -1,3 +1,15 @@
-# Kongroo.SampleApp.Package
+# Kongroo.SampleLib
 
-A Kongroo library.
+<one-line description of the library>
+
+## Install
+
+```bash
+dotnet add package Kongroo.SampleLib
+```
+
+## Usage
+
+```csharp
+// example usage
+```

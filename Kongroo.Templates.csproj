@@ -2,13 +2,14 @@
   <PropertyGroup>
     <PackageType>Template</PackageType>
     <PackageId>Kongroo.Templates</PackageId>
-    <Version>0.2.0</Version>
     <Title>Kongroo Templates</Title>
-    <Authors>Jose Junior</Authors>
+    <Authors>José Rogério de Almeida Júnior &lt;almeidajr.vr@gmail.com&gt;</Authors>
     <Description>Opinionated .NET starter templates for personal projects: a solution scaffolder plus project adders.</Description>
+    <PackageReleaseNotes>See the GitHub Releases for changes.</PackageReleaseNotes>
     <PackageTags>dotnet-new;templates;kongroo;scaffold</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <MinVerTagPrefix>v</MinVerTagPrefix>
     <PackageProjectUrl>https://github.com/almeidajr/Kongroo.Templates</PackageProjectUrl>
     <RepositoryUrl>https://github.com/almeidajr/Kongroo.Templates</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -33,5 +34,9 @@
 
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MinVer" Version="7.0.0" PrivateAssets="all" />
   </ItemGroup>
 </Project>

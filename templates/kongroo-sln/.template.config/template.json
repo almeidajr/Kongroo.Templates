@@ -1,6 +1,6 @@
 {
   "$schema": "http://json.schemastore.org/template",
-  "author": "Jose Junior <almeidajr.vr@gmail.com>",
+  "author": "José Rogério de Almeida Júnior <almeidajr.vr@gmail.com>",
   "classifications": ["Kongroo", "Web", "Solution", "API"],
   "identity": "Kongroo.Templates.Solution",
   "name": "Kongroo Solution",

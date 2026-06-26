@@ -4,7 +4,7 @@
     <PackageId>Kongroo.SampleLib</PackageId>
     <Title>Kongroo.SampleLib</Title>
     <Description>A Kongroo library.</Description>
-    <Authors>Jose Junior &lt;almeidajr.vr@gmail.com&gt;</Authors>
+    <Authors>José Rogério de Almeida Júnior &lt;almeidajr.vr@gmail.com&gt;</Authors>
     <PackageTags>kongroo</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>

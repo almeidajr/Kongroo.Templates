@@ -16,9 +16,9 @@ dotnet new install $nupkg.FullName --force
 if ($LASTEXITCODE -ne 0) { throw 'template install failed' }
 
 try {
-    # 2. Scaffold solution  (sourceName=SampleApp → -n Smoke produces Kongroo.Smoke.*)
+    # 2. Scaffold solution  (sourceName=Kongroo.SampleApp → -n Kongroo.Smoke produces Kongroo.Smoke.*)
     $smokeDir = Join-Path $work 'Smoke'
-    dotnet new kongroo-sln -n Smoke -o $smokeDir
+    dotnet new kongroo-sln -n Kongroo.Smoke -o $smokeDir
     if ($LASTEXITCODE -ne 0) { throw 'kongroo-sln scaffold failed' }
 
     Push-Location $smokeDir
@@ -64,7 +64,7 @@ try {
 
     # 7. Standalone library-repo scaffolder
     $libDir = Join-Path $work 'Lib'
-    dotnet new kongroo-nuget -n Foo -o $libDir
+    dotnet new kongroo-nuget -n Kongroo.Foo -o $libDir
     if ($LASTEXITCODE -ne 0) { throw 'kongroo-nuget scaffold failed' }
     Push-Location $libDir
     dotnet tool restore

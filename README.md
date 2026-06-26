@@ -31,18 +31,18 @@ it with `dotnet new uninstall Kongroo.Templates`.
 
 ## Getting started
 
-Scaffold a new solution. The `Kongroo.` prefix is fixed and `-n` supplies the application name:
+Scaffold a new solution — pass the full name (your projects live under the `Kongroo.` namespace):
 
 ```bash
-dotnet new kongroo-sln -n Billing
-# → ./Billing with Kongroo.Billing.Api, Kongroo.Billing.UnitTests, Kongroo.Billing.IntegrationTests
+dotnet new kongroo-sln -n Kongroo.Billing
+# → ./Kongroo.Billing with Kongroo.Billing.Api, Kongroo.Billing.UnitTests, Kongroo.Billing.IntegrationTests
 ```
 
 Add more projects to an existing Kongroo solution (adders take the full project name and print the
 exact `dotnet sln add` command to wire themselves in):
 
 ```bash
-cd Billing
+cd Kongroo.Billing
 dotnet new kongroo-lib   -n Kongroo.Billing.Domain   -o src/Kongroo.Billing.Domain
 dotnet new kongroo-itest -n Kongroo.Billing.E2ETests -o test/Kongroo.Billing.E2ETests
 ```
@@ -50,7 +50,8 @@ dotnet new kongroo-itest -n Kongroo.Billing.E2ETests -o test/Kongroo.Billing.E2E
 Scaffold a standalone publishable library repo:
 
 ```bash
-dotnet new kongroo-nuget -n Kongroo.Billing.Sdk -o Kongroo.Billing.Sdk
+dotnet new kongroo-nuget -n Kongroo.Acme
+# → ./Kongroo.Acme with the Kongroo.Acme library + Kongroo.Acme.Tests
 ```
 
 ### Options
@@ -58,8 +59,8 @@ dotnet new kongroo-nuget -n Kongroo.Billing.Sdk -o Kongroo.Billing.Sdk
 The solution template exposes a couple of switches:
 
 ```bash
-dotnet new kongroo-sln -n Billing --integration-tests false   # omit the integration-test project
-dotnet new kongroo-sln -n Billing --observability false       # omit OpenTelemetry wiring + packages
+dotnet new kongroo-sln -n Kongroo.Billing --integration-tests false   # omit the integration-test project
+dotnet new kongroo-sln -n Kongroo.Billing --observability false       # omit OpenTelemetry wiring + packages
 ```
 
 The Web API adder also accepts `--observability`.

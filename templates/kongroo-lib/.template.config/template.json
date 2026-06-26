@@ -8,6 +8,7 @@
   "tags": { "language": "C#", "type": "project" },
   "sourceName": "Kongroo.SampleApp.Library",
   "preferNameDirectory": true,
+  "primaryOutputs": [{ "path": "Kongroo.SampleApp.Library.csproj" }],
   "sources": [
     { "exclude": ["**/bin/**", "**/obj/**", ".template.config/**"] }
   ],

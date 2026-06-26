@@ -14,7 +14,7 @@ automated from a local checkout.
    <https://www.nuget.org/account/trustedpublishing> → **Add policy**:
    - **Repository Owner**: `almeidajr`
    - **Repository**: `Kongroo.Templates`
-   - **Workflow File**: `release.yml` *(filename only — must match exactly, case-insensitive)*
+   - **Workflow File**: `release.yml` _(filename only — must match exactly, case-insensitive)_
    - **Environment**: `release`
 
    > Private repo? The policy is "temporarily active" for 7 days and becomes

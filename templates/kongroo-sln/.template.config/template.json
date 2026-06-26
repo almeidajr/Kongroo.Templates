@@ -40,9 +40,7 @@
       ]
     }
   ],
-  "primaryOutputs": [
-    { "path": "Kongroo.SampleApp.slnx" }
-  ],
+  "primaryOutputs": [{ "path": "Kongroo.SampleApp.slnx" }],
   "postActions": [
     {
       "id": "restore",

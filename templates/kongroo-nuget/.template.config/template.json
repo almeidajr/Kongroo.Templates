@@ -9,9 +9,7 @@
   "sourceName": "Kongroo.SampleApp.Package",
   "preferNameDirectory": true,
   "primaryOutputs": [{ "path": "Kongroo.SampleApp.Package.csproj" }],
-  "sources": [
-    { "exclude": ["**/bin/**", "**/obj/**", ".template.config/**"] }
-  ],
+  "sources": [{ "exclude": ["**/bin/**", "**/obj/**", ".template.config/**"] }],
   "postActions": [
     {
       "id": "restore",
@@ -24,9 +22,7 @@
     {
       "id": "add-to-solution",
       "description": "Add the project to the solution",
-      "manualInstructions": [
-        { "text": "Add to the solution: dotnet sln add ." }
-      ],
+      "manualInstructions": [{ "text": "Add to the solution: dotnet sln add ." }],
       "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
       "continueOnError": true
     }

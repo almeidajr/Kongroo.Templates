@@ -14,9 +14,11 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'"
+      >true</ContinuousIntegrationBuild>
     <!-- Disable SourceLink outside CI where no git repo context exists -->
-    <EnableSourceControlManagerQueries Condition="'$(ContinuousIntegrationBuild)' != 'true'">false</EnableSourceControlManagerQueries>
+    <EnableSourceControlManagerQueries Condition="'$(ContinuousIntegrationBuild)' != 'true'"
+      >false</EnableSourceControlManagerQueries>
     <EnableSourceLink Condition="'$(ContinuousIntegrationBuild)' != 'true'">false</EnableSourceLink>
   </PropertyGroup>
   <ItemGroup>

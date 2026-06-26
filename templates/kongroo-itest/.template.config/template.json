@@ -13,9 +13,7 @@
       "exclude": ["**/bin/**", "**/obj/**", ".template.config/**"]
     }
   ],
-  "primaryOutputs": [
-    { "path": "Kongroo.SampleApp.IntegrationTests.csproj" }
-  ],
+  "primaryOutputs": [{ "path": "Kongroo.SampleApp.IntegrationTests.csproj" }],
   "postActions": [
     {
       "id": "restore",

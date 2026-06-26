@@ -10,7 +10,6 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 #endif
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSerilog(configuration =>

@@ -40,11 +40,6 @@ try {
     dotnet sln $slnx add src/Kongroo.Smoke.Gateway/Kongroo.Smoke.Gateway.csproj
     if ($LASTEXITCODE -ne 0) { throw 'sln add Gateway failed' }
 
-    dotnet new kongroo-nuget -n Kongroo.Smoke.Sdk     -o src/Kongroo.Smoke.Sdk
-    if ($LASTEXITCODE -ne 0) { throw 'kongroo-nuget scaffold failed' }
-    dotnet sln $slnx add src/Kongroo.Smoke.Sdk/Kongroo.Smoke.Sdk.csproj
-    if ($LASTEXITCODE -ne 0) { throw 'sln add Sdk failed' }
-
     dotnet new kongroo-test  -n Kongroo.Smoke.MoreTests  -o test/Kongroo.Smoke.MoreTests
     if ($LASTEXITCODE -ne 0) { throw 'kongroo-test scaffold failed' }
     dotnet sln $slnx add test/Kongroo.Smoke.MoreTests/Kongroo.Smoke.MoreTests.csproj
@@ -66,10 +61,28 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'tests failed' }
 
     Pop-Location
+
+    # 7. Standalone library-repo scaffolder
+    $libDir = Join-Path $work 'Lib'
+    dotnet new kongroo-nuget -n Foo -o $libDir
+    if ($LASTEXITCODE -ne 0) { throw 'kongroo-nuget scaffold failed' }
+    Push-Location $libDir
+    dotnet tool restore
+    if ($LASTEXITCODE -ne 0) { throw 'lib tool restore failed' }
+    dotnet build -warnaserror
+    if ($LASTEXITCODE -ne 0) { throw 'lib build failed' }
+    dotnet test
+    if ($LASTEXITCODE -ne 0) { throw 'lib tests failed' }
+    dotnet pack -c Release -o (Join-Path $libDir 'pkg')
+    if ($LASTEXITCODE -ne 0) { throw 'lib pack failed' }
+    if (-not (Get-ChildItem (Join-Path $libDir 'pkg') -Filter '*.nupkg')) { throw 'no nupkg produced' }
+    if (-not (Get-ChildItem (Join-Path $libDir 'pkg') -Filter '*.snupkg')) { throw 'no snupkg produced' }
+    Pop-Location
+
     Write-Host 'SMOKE OK' -ForegroundColor Green
 }
 finally {
-    if ((Get-Location).Path -eq $smokeDir) { Pop-Location }
+    if ((Get-Location).Path -eq $smokeDir -or (Get-Location).Path -eq $libDir) { Pop-Location }
     dotnet new uninstall Kongroo.Templates | Out-Null
     Remove-Item -Recurse -Force $work -ErrorAction SilentlyContinue
 }

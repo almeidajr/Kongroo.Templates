@@ -25,7 +25,7 @@ it with `dotnet new uninstall Kongroo.Templates`.
 | Solution          | `kongroo-sln`   | A full repo: `.slnx`, build conventions, formatting + git hooks, GitHub Actions, a Web API project, and unit + integration tests |
 | Class library     | `kongroo-lib`   | A plain class library                                                                                                            |
 | Web API           | `kongroo-api`   | An ASP.NET Core minimal API (Serilog, OpenTelemetry, Scalar, health checks, problem details, validation, Dockerfile)             |
-| NuGet package     | `kongroo-nuget` | A packable, OSS-ready library (SourceLink, symbols, MIT metadata, packed README)                                                 |
+| NuGet package     | `kongroo-nuget` | A standalone publishable library repo (solution + library + tests + CI/OIDC publish)                                             |
 | Unit tests        | `kongroo-test`  | An xUnit v3 project on Microsoft Testing Platform (Bogus, NSubstitute, Shouldly)                                                 |
 | Integration tests | `kongroo-itest` | An xUnit v3 project with `WebApplicationFactory` + Testcontainers                                                                |
 
@@ -44,8 +44,13 @@ exact `dotnet sln add` command to wire themselves in):
 ```bash
 cd Billing
 dotnet new kongroo-lib   -n Kongroo.Billing.Domain   -o src/Kongroo.Billing.Domain
-dotnet new kongroo-nuget -n Kongroo.Billing.Sdk      -o src/Kongroo.Billing.Sdk
 dotnet new kongroo-itest -n Kongroo.Billing.E2ETests -o test/Kongroo.Billing.E2ETests
+```
+
+Scaffold a standalone publishable library repo:
+
+```bash
+dotnet new kongroo-nuget -n Kongroo.Billing.Sdk -o Kongroo.Billing.Sdk
 ```
 
 ### Options

@@ -4,6 +4,23 @@ on:
     branches: [main]
   pull_request:
 jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            10.0.x
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: dotnet tool restore
+      - run: dotnet csharpier check .
+      - run: pnpm exec prettier --check .
   templates:
     runs-on: ubuntu-latest
     steps:

@@ -69,11 +69,12 @@ try {
     Push-Location $libDir
     dotnet tool restore
     if ($LASTEXITCODE -ne 0) { throw 'lib tool restore failed' }
-    dotnet build -warnaserror
+    # non-git temp dir: disable CI build so SourceLink (CI-guarded on under GITHUB_ACTIONS) doesn't error
+    dotnet build -warnaserror -p:ContinuousIntegrationBuild=false
     if ($LASTEXITCODE -ne 0) { throw 'lib build failed' }
     dotnet test
     if ($LASTEXITCODE -ne 0) { throw 'lib tests failed' }
-    dotnet pack -c Release -o (Join-Path $libDir 'pkg')
+    dotnet pack -c Release -o (Join-Path $libDir 'pkg') -p:ContinuousIntegrationBuild=false
     if ($LASTEXITCODE -ne 0) { throw 'lib pack failed' }
     if (-not (Get-ChildItem (Join-Path $libDir 'pkg') -Filter '*.nupkg')) { throw 'no nupkg produced' }
     if (-not (Get-ChildItem (Join-Path $libDir 'pkg') -Filter '*.snupkg')) { throw 'no snupkg produced' }

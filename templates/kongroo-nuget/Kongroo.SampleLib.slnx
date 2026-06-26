@@ -2,4 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/Kongroo.SampleLib/Kongroo.SampleLib.csproj" />
   </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/Kongroo.SampleLib.Tests/Kongroo.SampleLib.Tests.csproj" />
+  </Folder>
 </Solution>

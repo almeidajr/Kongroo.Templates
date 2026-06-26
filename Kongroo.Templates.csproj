@@ -5,7 +5,7 @@
     <Version>0.1.0</Version>
     <Title>Kongroo Templates</Title>
     <Authors>Jose Junior</Authors>
-    <Description>Kongroo company starter templates: solution scaffolder + project adders.</Description>
+    <Description>Opinionated .NET starter templates for personal projects: a solution scaffolder plus project adders.</Description>
     <PackageTags>dotnet-new;templates;kongroo;scaffold</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>

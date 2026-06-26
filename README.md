@@ -1,10 +1,10 @@
 # Kongroo.Templates
 
-Company starter templates for `dotnet new`.
+Opinionated .NET starter templates for my personal projects.
 
 ```bash
 dotnet new install Kongroo.Templates
-dotnet new kongroo-sln -n Kongroo.Billing
+dotnet new kongroo-sln -n Billing   # scaffolds Kongroo.Billing.* (Api, UnitTests, ...)
 ```
 
 | Template | Short name |

@@ -40,9 +40,7 @@ builder
 builder
     .Services.AddOpenTelemetry()
     .ConfigureResource(resource => resource.AddService(builder.Environment.ApplicationName))
-    .WithTracing(tracing =>
-        tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation().AddOtlpExporter()
-    )
+    .WithTracing(tracing => tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation().AddOtlpExporter())
     .WithMetrics(metrics =>
         metrics
             .AddAspNetCoreInstrumentation()
@@ -64,10 +62,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-app.MapHealthChecks(
-    "/health",
-    new HealthCheckOptions { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse }
-);
+app.MapHealthChecks("/health", new HealthCheckOptions { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
 app.MapHealthChecks(
     "/alive",
     new HealthCheckOptions

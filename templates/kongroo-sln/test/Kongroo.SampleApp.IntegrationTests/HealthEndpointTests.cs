@@ -4,8 +4,7 @@ using Xunit;
 
 namespace Kongroo.SampleApp.IntegrationTests;
 
-public class HealthEndpointTests(WebApplicationFactory<Program> factory)
-    : IClassFixture<WebApplicationFactory<Program>>
+public class HealthEndpointTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
 {
     [Fact]
     public async Task GetHealth_WhenApplicationIsRunning_ShouldReturnHealthy()

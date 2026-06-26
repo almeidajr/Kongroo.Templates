@@ -20,6 +20,7 @@ try {
     $smokeDir = Join-Path $work 'Smoke'
     dotnet new kongroo-sln -n Kongroo.Smoke -o $smokeDir
     if ($LASTEXITCODE -ne 0) { throw 'kongroo-sln scaffold failed' }
+    if (Test-Path (Join-Path $smokeDir '.template.config')) { throw '.template.config leaked into kongroo-sln output' }
 
     Push-Location $smokeDir
 
@@ -66,6 +67,7 @@ try {
     $libDir = Join-Path $work 'Lib'
     dotnet new kongroo-nuget -n Kongroo.Foo -o $libDir
     if ($LASTEXITCODE -ne 0) { throw 'kongroo-nuget scaffold failed' }
+    if (Test-Path (Join-Path $libDir '.template.config')) { throw '.template.config leaked into kongroo-nuget output' }
     Push-Location $libDir
     dotnet tool restore
     if ($LASTEXITCODE -ne 0) { throw 'lib tool restore failed' }

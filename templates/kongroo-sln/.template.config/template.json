@@ -31,7 +31,8 @@
         "**/.vs/**",
         "**/TestResults/**",
         "**/*.user",
-        "**/artifacts/**"
+        "**/artifacts/**",
+        ".template.config/**"
       ],
       "modifiers": [
         {

@@ -8,7 +8,7 @@ public class HealthEndpointTests(WebApplicationFactory<Program> factory)
     : IClassFixture<WebApplicationFactory<Program>>
 {
     [Fact]
-    public async Task Health_endpoint_returns_healthy()
+    public async Task GetHealth_WhenApplicationIsRunning_ShouldReturnHealthy()
     {
         using var client = factory.CreateClient();
 

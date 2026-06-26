@@ -3,7 +3,10 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
-  <ItemGroup></ItemGroup>
+  <ItemGroup>
+    <!-- Analyzers -->
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.27.0.140913" />
+  </ItemGroup>
   <ItemGroup>
     <!-- Test packages -->
     <PackageVersion Include="Bogus" Version="35.6.5" />

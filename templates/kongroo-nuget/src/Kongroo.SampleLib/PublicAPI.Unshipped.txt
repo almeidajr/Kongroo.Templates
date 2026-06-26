@@ -1,3 +1,5 @@
 #nullable enable
 Kongroo.SampleLib.Class1
 Kongroo.SampleLib.Class1.Class1() -> void
+Kongroo.SampleLib.Class1.Name.get -> string!
+Kongroo.SampleLib.Class1.Name.init -> void

@@ -79,7 +79,4 @@ app.MapHealthChecks(
 
 app.MapGet("/", () => "Kongroo.SampleApp.Api");
 
-app.Run();
-
-/// <summary>Entry point class exposed for integration-test <c>WebApplicationFactory&lt;Program&gt;</c>.</summary>
-public partial class Program;
+await app.RunAsync();

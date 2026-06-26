@@ -15,4 +15,8 @@
     <!-- ponytail: skip MinVer when no .git exists (generated repos before first git init / local dev outside git) -->
     <MinVerSkip Condition="!Exists('$(MSBuildThisFileDirectory).git')">true</MinVerSkip>
   </PropertyGroup>
+  <ItemGroup>
+    <!-- Code-quality analyzer (all projects); dev-only, not a runtime/transitive dependency -->
+    <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="all" />
+  </ItemGroup>
 </Project>

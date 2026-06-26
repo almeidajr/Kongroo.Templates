@@ -55,8 +55,10 @@ try {
     dotnet sln $slnx add test/Kongroo.Smoke.E2ETests/Kongroo.Smoke.E2ETests.csproj
     if ($LASTEXITCODE -ne 0) { throw 'sln add E2ETests failed' }
 
-    # 5. Build
-    dotnet build -warnaserror
+    # 5. Build. The smoke build runs in a non-git temp dir; in CI (GITHUB_ACTIONS=true)
+    # the kongroo-nuget project would turn SourceLink on and fail ("unable to locate
+    # repository"). We verify buildability, not publishing, so force SourceLink off.
+    dotnet build -warnaserror -p:ContinuousIntegrationBuild=false
     if ($LASTEXITCODE -ne 0) { throw 'build failed' }
 
     # 6. Test (plain — no --tl:off, breaks MTP discovery)

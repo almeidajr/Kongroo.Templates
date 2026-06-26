@@ -2,7 +2,7 @@
   <PropertyGroup>
     <PackageType>Template</PackageType>
     <PackageId>Kongroo.Templates</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <Title>Kongroo Templates</Title>
     <Authors>Jose Junior</Authors>
     <Description>Opinionated .NET starter templates for personal projects: a solution scaffolder plus project adders.</Description>

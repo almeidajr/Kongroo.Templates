@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>Kongroo.SampleLib</PackageId>
+    <Title>Kongroo.SampleLib</Title>
+    <Description>A Kongroo library.</Description>
+    <Authors>Jose Junior &lt;almeidajr.vr@gmail.com&gt;</Authors>
+    <PackageTags>kongroo</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>See the project's GitHub Releases for changes.</PackageReleaseNotes>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IsAotCompatible>true</IsAotCompatible>
+    <!-- Re-enable CS1591 (repo-wide NoWarn suppresses it for apps); a published library documents its public API. -->
+    <NoWarn>$(NoWarn.Replace('CS1591', ''))</NoWarn>
+    <MinVerTagPrefix>v</MinVerTagPrefix>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'"
+      >true</ContinuousIntegrationBuild>
+    <!-- Disable SourceLink outside CI where no git repo context exists -->
+    <EnableSourceControlManagerQueries Condition="'$(ContinuousIntegrationBuild)' != 'true'"
+      >false</EnableSourceControlManagerQueries>
+    <EnableSourceLink Condition="'$(ContinuousIntegrationBuild)' != 'true'">false</EnableSourceLink>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MinVer" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Jose Junior <almeidajr.vr@gmail.com>",
+  "classifications": ["Kongroo", "Web", "API"],
+  "identity": "Kongroo.Templates.Api",
+  "name": "Kongroo Web API",
+  "shortName": "kongroo-api",
+  "tags": { "language": "C#", "type": "project" },
+  "sourceName": "Kongroo.SampleApp.Api",
+  "preferNameDirectory": true,
+  "symbols": {
+    "observability": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Include OpenTelemetry tracing and metrics."
+    }
+  },
+  "primaryOutputs": [{ "path": "Kongroo.SampleApp.Api.csproj" }],
+  "sources": [
+    { "exclude": ["**/bin/**", "**/obj/**", ".template.config/**"] }
+  ],
+  "postActions": [
+    {
+      "id": "restore",
+      "condition": "true",
+      "description": "Restore NuGet packages",
+      "manualInstructions": [{ "text": "Run 'dotnet restore'" }],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true
+    },
+    {
+      "id": "add-to-solution",
+      "description": "Add the project to the solution",
+      "manualInstructions": [
+        { "text": "Add to the solution: dotnet sln add ." }
+      ],
+      "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
+      "continueOnError": true
+    }
+  ]
+}

@@ -22,6 +22,13 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'kongroo-sln scaffold failed' }
     if (Test-Path (Join-Path $smokeDir '.template.config')) { throw '.template.config leaked into kongroo-sln output' }
 
+    # global.json must carry a full feature-band SDK version when rollForward is set,
+    # else setup-dotnet (used by the scaffolded repo's CI) rejects it: "Version 'x.y.0' is not valid".
+    $gj = Get-Content (Join-Path $smokeDir 'global.json') -Raw | ConvertFrom-Json
+    if ($gj.sdk.rollForward -and $gj.sdk.version -notmatch '^\d+\.\d+\.\d{3}') {
+        throw "global.json sdk.version '$($gj.sdk.version)' must be a full SDK version (e.g. 10.0.100) when rollForward is set"
+    }
+
     Push-Location $smokeDir
 
     # 3. Restore tools (dotnet-format, etc.)

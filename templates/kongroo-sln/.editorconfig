@@ -19,6 +19,12 @@ dotnet_sort_system_directives_first = true
 dotnet_style_require_accessibility_modifiers = always:warning
 dotnet_style_readonly_field = true:warning
 
+# Logging: this starter uses plain ILogger/Serilog calls. Don't force LoggerMessage
+# source-gen (CA1848) or flag ordinary log arguments (CA1873) — both fire on every
+# Log* call and would fail warnaserror.
+dotnet_diagnostic.CA1848.severity = none
+dotnet_diagnostic.CA1873.severity = none
+
 # Modern C# constructs
 csharp_style_namespace_declarations = file_scoped:warning
 csharp_using_directive_placement = outside_namespace:warning

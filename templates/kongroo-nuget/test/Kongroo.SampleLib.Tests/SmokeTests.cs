@@ -1,6 +1,5 @@
 using Bogus;
 using Shouldly;
-using Xunit;
 
 namespace Kongroo.SampleLib.Tests;
 

@@ -20,6 +20,33 @@ function Assert-PackageIcon([string]$NupkgPath) {
     finally { $zip.Dispose() }
 }
 
+# A config whose rules never fire passes CI like a working one. Prove they fire.
+function Assert-StyleRulesFire([string]$ProjectDir) {
+    $probe = Join-Path $ProjectDir 'StyleProbe.cs'
+    @'
+namespace StyleProbe;
+
+public sealed class Probe
+{
+    public System.Collections.Generic.List<int> Items { get; set; } = [];
+
+    public static int Run()
+    {
+        int Helper() => 42;
+        return Helper();
+    }
+}
+'@ | Set-Content -LiteralPath $probe -Encoding utf8
+    try {
+        $out = dotnet build $ProjectDir -warnaserror -p:ContinuousIntegrationBuild=false 2>&1 | Out-String
+        if ($LASTEXITCODE -eq 0) { throw 'style probe compiled clean; the editorconfig rules are not firing' }
+        foreach ($id in 'CA2227', 'IDE0062', 'IDE0130') {
+            if ($out -notmatch $id) { throw "style probe failed but never reported $id; that rule is not firing" }
+        }
+    }
+    finally { Remove-Item -LiteralPath $probe -Force -ErrorAction SilentlyContinue }
+}
+
 # 1. Pack and install
 dotnet pack (Join-Path $root 'Kongroo.Templates.csproj') -c Release -o $art
 if ($LASTEXITCODE -ne 0) { throw 'pack failed' }
@@ -84,6 +111,8 @@ try {
     # 6. Test (plain — no --tl:off, breaks MTP discovery)
     dotnet test
     if ($LASTEXITCODE -ne 0) { throw 'tests failed' }
+
+    Assert-StyleRulesFire (Join-Path $smokeDir 'src/Kongroo.Smoke.Api')
 
     Pop-Location
 

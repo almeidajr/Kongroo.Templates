@@ -20,62 +20,60 @@ it with `dotnet new uninstall Kongroo.Templates`.
 
 ## Templates
 
-| Template          | Short name      | Scaffolds                                                                                                                        |
-| ----------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Solution          | `kongroo-sln`   | A full repo: `.slnx`, build conventions, formatting + git hooks, GitHub Actions, a Web API project, and unit + integration tests |
-| Class library     | `kongroo-lib`   | A plain class library                                                                                                            |
-| Web API           | `kongroo-api`   | An ASP.NET Core minimal API (Serilog, OpenTelemetry, Scalar, health checks, problem details, validation, Dockerfile)             |
-| NuGet package     | `kongroo-nuget` | A standalone publishable library repo (solution + library + tests + CI/OIDC publish)                                             |
-| Unit tests        | `kongroo-test`  | An xUnit v3 project on Microsoft Testing Platform (Bogus, NSubstitute, Shouldly)                                                 |
-| Integration tests | `kongroo-itest` | An xUnit v3 project with `WebApplicationFactory` + Testcontainers                                                                |
+| Template          | Short name        | Scaffolds                                                                                                |
+| ----------------- | ----------------- | -------------------------------------------------------------------------------------------------------- |
+| Solution          | `kongroo-sln`     | An empty repo: `.slnx`, build conventions, formatting + git hooks, GitHub Actions. No projects.          |
+| NuGet package     | `kongroo-nuget`   | A publishable package repo (solution + library + tests + CI/OIDC publish)                                |
+| Web API           | `kongroo-api`     | An ASP.NET Core minimal API (Serilog, OpenTelemetry, Scalar, health checks, problem details, Dockerfile) |
+| Worker service    | `kongroo-worker`  | A Generic Host `BackgroundService` (Serilog, OpenTelemetry, Dockerfile)                                  |
+| CLI app           | `kongroo-cli`     | A Spectre.Console `CommandApp` wired onto Microsoft.Extensions.DependencyInjection                       |
+| Console app       | `kongroo-console` | A plain console app, no packages                                                                         |
+| Class library     | `kongroo-lib`     | A class library; `--packable` makes it publishable                                                       |
+| Unit tests        | `kongroo-test`    | An xUnit v3 project on Microsoft Testing Platform (Bogus, NSubstitute, Shouldly)                         |
+| Integration tests | `kongroo-itest`   | An xUnit v3 project with `WebApplicationFactory` + Testcontainers                                        |
 
 ## Getting started
 
-Scaffold a new solution — pass the full name (your projects live under the `Kongroo.` namespace):
+Scaffold an empty repo, then add the projects you want:
 
 ```bash
 dotnet new kongroo-sln -n Kongroo.Billing
-# → ./Kongroo.Billing with Kongroo.Billing.Api, Kongroo.Billing.UnitTests, Kongroo.Billing.IntegrationTests
-```
-
-Add more projects to an existing Kongroo solution (adders take the full project name and print the
-exact `dotnet sln add` command to wire themselves in):
-
-```bash
 cd Kongroo.Billing
-dotnet new kongroo-lib   -n Kongroo.Billing.Domain   -o src/Kongroo.Billing.Domain
-dotnet new kongroo-itest -n Kongroo.Billing.E2ETests -o test/Kongroo.Billing.E2ETests
+
+dotnet new kongroo-api  -n Kongroo.Billing.Api       -o src/Kongroo.Billing.Api
+dotnet new kongroo-test -n Kongroo.Billing.UnitTests -o test/Kongroo.Billing.UnitTests
+dotnet sln add src/Kongroo.Billing.Api/Kongroo.Billing.Api.csproj
+dotnet sln add test/Kongroo.Billing.UnitTests/Kongroo.Billing.UnitTests.csproj
 ```
 
-Scaffold a standalone publishable library repo:
+Scaffold a package repo, which comes with its first library already wired up:
 
 ```bash
 dotnet new kongroo-nuget -n Kongroo.Acme
-# → ./Kongroo.Acme with the Kongroo.Acme library + Kongroo.Acme.Tests
+cd Kongroo.Acme
+dotnet new kongroo-lib --packable -n Kongroo.Acme.Json -o src/Kongroo.Acme.Json
 ```
 
 ### Options
 
-The solution template exposes a couple of switches:
-
-```bash
-dotnet new kongroo-sln -n Kongroo.Billing --integration-tests false   # omit the integration-test project
-dotnet new kongroo-sln -n Kongroo.Billing --observability false       # omit OpenTelemetry wiring + packages
-```
-
-The Web API adder also accepts `--observability`.
+| Template                        | Option            | Effect                                                                     |
+| ------------------------------- | ----------------- | -------------------------------------------------------------------------- |
+| `kongroo-api`, `kongroo-worker` | `--observability` | OpenTelemetry tracing + metrics (default on)                               |
+| `kongroo-lib`                   | `--packable`      | Packaging metadata, MinVer, SourceLink, public-API analyzers (default off) |
 
 ## What's baked in
 
 - **Target**: `net10.0`, nullable + implicit usings, warnings-as-errors, latest .NET analyzers.
-- **Solution & packages**: `.slnx` format and Central Package Management (`Directory.Packages.props`).
+- **Solution & packages**: `.slnx` format and Central Package Management. Each project owns its versions in a `Packages.props` beside its `.csproj`; the root `Directory.Packages.props` holds the repo-wide analyzer and glob-imports the rest. Publishing is opt-in — `IsPackable` is `false` repo-wide, so a private library cannot reach nuget.org by accident.
 - **Formatting & hooks**: CSharpier (C#), Prettier (JSON/YAML/Markdown), commitlint (Conventional
   Commits) — orchestrated by pre-commit, with a repo-root tool manifest.
 - **Testing**: xUnit v3 on Microsoft Testing Platform, with Bogus, NSubstitute, and Shouldly;
   integration tests use `WebApplicationFactory` and Testcontainers.
 - **Web API**: Serilog (with enrichers), OpenTelemetry tracing + metrics, the Scalar API reference,
-  health checks (`/health`, `/alive`), problem-details error handling, minimal-API validation, and
-  a multi-stage HTTP-only Dockerfile.
+  health checks (`/health`, `/alive`), problem-details error handling, and a multi-stage HTTP-only Dockerfile.
+- **Worker service**: Serilog (with enrichers), OpenTelemetry tracing + metrics, and a multi-stage
+  Dockerfile.
+- **CLI app**: Spectre.Console commands wired onto Microsoft.Extensions.DependencyInjection.
 - **CI/CD**: GitHub Actions for build/test, plus keyless publishing to nuget.org via
   [trusted publishing (OIDC)](https://learn.microsoft.com/nuget/nuget-org/trusted-publishing).
 

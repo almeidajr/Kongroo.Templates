@@ -175,6 +175,14 @@ try {
     $stray = Get-ChildItem (Join-Path $smokeDir 'pkg') -Filter '*.nupkg' -ErrorAction SilentlyContinue
     if ($stray) { throw "kongroo-sln repo produced packages nothing asked for: $($stray.Name -join ', ')" }
 
+    # The packaging PackageReferences are gated by the same #if as these files, so a stray file
+    # here fails nothing at build time - only this assertion catches it.
+    foreach ($f in 'README.md', 'PublicAPI.Shipped.txt', 'PublicAPI.Unshipped.txt', 'Packages.props') {
+        if (Test-Path (Join-Path $smokeDir "src/Kongroo.Smoke.Domain/$f")) {
+            throw "plain kongroo-lib emitted packaging-only file $f"
+        }
+    }
+
     if (-not (Test-Path (Join-Path $smokeDir 'assets/icon.png'))) {
         throw 'assets/icon.png missing from kongroo-sln output; --packable cannot pack without it'
     }

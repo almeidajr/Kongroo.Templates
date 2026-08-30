@@ -221,7 +221,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'lib tests failed' }
     dotnet pack -c Release -o (Join-Path $libDir 'pkg') -p:ContinuousIntegrationBuild=false
     if ($LASTEXITCODE -ne 0) { throw 'lib pack failed' }
-    $nupkgs = Get-ChildItem (Join-Path $libDir 'pkg') -Filter '*.nupkg' | Where-Object Name -NotLike '*.snupkg'
+    $nupkgs = Get-ChildItem (Join-Path $libDir 'pkg') -Filter '*.nupkg'
     if ($nupkgs.Count -ne 2) {
         throw "expected 2 packages (Kongroo.Foo, Kongroo.Foo.Json), got $($nupkgs.Count): $($nupkgs.Name -join ', ')"
     }

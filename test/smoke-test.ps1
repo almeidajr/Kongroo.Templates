@@ -124,6 +124,18 @@ try {
     dotnet test
     if ($LASTEXITCODE -ne 0) { throw 'tests failed' }
 
+    # A private library must not publish itself. IsPackable defaults to true for a classlib,
+    # so without the repo-wide default an internal Domain project lands on nuget.org on the
+    # first `git tag v1.0.0`.
+    dotnet pack -c Release -o (Join-Path $smokeDir 'pkg') -p:ContinuousIntegrationBuild=false
+    if ($LASTEXITCODE -ne 0) { throw 'solution pack failed' }
+    $stray = Get-ChildItem (Join-Path $smokeDir 'pkg') -Filter '*.nupkg' -ErrorAction SilentlyContinue
+    if ($stray) { throw "kongroo-sln repo produced packages nothing asked for: $($stray.Name -join ', ')" }
+
+    if (-not (Test-Path (Join-Path $smokeDir 'assets/icon.png'))) {
+        throw 'assets/icon.png missing from kongroo-sln output; --packable cannot pack without it'
+    }
+
     Assert-StyleRulesFire (Join-Path $smokeDir 'src/Kongroo.Smoke.Api')
 
     Pop-Location

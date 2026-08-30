@@ -23,6 +23,8 @@ $sharedFiles = @(
     'commitlint.config.cjs',
     '.pre-commit-config.yaml',
     'LICENSE',
+    'assets/icon-32.png',
+    'assets/icon.png',
     'global.json',
     'nuget.config',
     '.github/workflows/ci.yml',

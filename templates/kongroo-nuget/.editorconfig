@@ -195,6 +195,7 @@ dotnet_naming_style.async_suffix.capitalization = pascal_case
 
 # Test files use AAA-pattern names (Method_When_ShouldResult); relax naming-style
 # enforcement there. SonarAnalyzer is test-aware and still applies.
-[**/test/**.cs]
+# Leading **/ does not match a zero-length segment, so [**/test/**.cs] never matched test/ at the repo root.
+[{test,**/test}/**.cs]
 dotnet_diagnostic.IDE1006.severity = none
 dotnet_diagnostic.CA1707.severity = none

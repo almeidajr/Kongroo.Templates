@@ -104,7 +104,8 @@ try {
         @{ Template = 'kongroo-lib';     Name = 'Kongroo.Smoke.Domain';    Dir = 'src' },
         @{ Template = 'kongroo-test';    Name = 'Kongroo.Smoke.UnitTests'; Dir = 'test' },
         @{ Template = 'kongroo-itest';   Name = 'Kongroo.Smoke.E2ETests';  Dir = 'test' },
-        @{ Template = 'kongroo-console'; Name = 'Kongroo.Smoke.Tool';      Dir = 'src' }
+        @{ Template = 'kongroo-console'; Name = 'Kongroo.Smoke.Tool';      Dir = 'src' },
+        @{ Template = 'kongroo-worker';  Name = 'Kongroo.Smoke.Ingest';    Dir = 'src' }
     )
 
     foreach ($adder in $adders) {
@@ -113,6 +114,18 @@ try {
         if ($LASTEXITCODE -ne 0) { throw "$($adder.Template) scaffold failed for $($adder.Name)" }
         dotnet sln $slnx add "$out/$($adder.Name).csproj"
         if ($LASTEXITCODE -ne 0) { throw "sln add failed for $($adder.Name)" }
+    }
+
+    # The observability=false path is otherwise never built. A .props conditional the template
+    # engine ignored would leave OpenTelemetry PackageVersion entries behind with no matching
+    # PackageReference, or drop needed ones and fail restore with NU1010.
+    dotnet new kongroo-worker -n Kongroo.Smoke.Plain -o src/Kongroo.Smoke.Plain --observability false
+    if ($LASTEXITCODE -ne 0) { throw 'kongroo-worker --observability false scaffold failed' }
+    dotnet sln $slnx add src/Kongroo.Smoke.Plain/Kongroo.Smoke.Plain.csproj
+    if ($LASTEXITCODE -ne 0) { throw 'sln add Plain failed' }
+    if (Select-String -Path (Join-Path $smokeDir 'src/Kongroo.Smoke.Plain/Packages.props') `
+            -Pattern 'OpenTelemetry' -Quiet) {
+        throw 'observability=false left OpenTelemetry PackageVersion entries in Packages.props'
     }
 
     # sourceName is Kongroo.SampleApp.Console and the body says Console.WriteLine. dotnet new

@@ -66,6 +66,22 @@ try {
     if (Test-Path (Join-Path $smokeDir '.template.config')) { throw '.template.config leaked into kongroo-sln output' }
     if (-not (Test-Path (Join-Path $smokeDir 'assets/icon-32.png'))) { throw 'assets/icon-32.png missing from kongroo-sln output' }
 
+    # The shell must be empty: no projects, and both solution folders present so
+    # `dotnet sln add` has somewhere to route src/ and test/ projects.
+    if (Get-ChildItem $smokeDir -Recurse -Filter '*.csproj' -ErrorAction SilentlyContinue) {
+        throw 'kongroo-sln emitted a project; the shell must be empty'
+    }
+    $slnxText = Get-Content (Join-Path $smokeDir 'Kongroo.Smoke.slnx') -Raw
+    foreach ($folder in '"/src/"', '"/test/"') {
+        if ($slnxText -notmatch [regex]::Escape($folder)) { throw "slnx is missing the $folder folder" }
+    }
+
+    # A zero-match glob import must be silently skipped, not an error.
+    Push-Location $smokeDir
+    dotnet restore
+    if ($LASTEXITCODE -ne 0) { throw 'empty shell failed to restore' }
+    Pop-Location
+
     # global.json must carry a full feature-band SDK version when rollForward is set,
     # else setup-dotnet (used by the scaffolded repo's CI) rejects it: "Version 'x.y.0' is not valid".
     $gj = Get-Content (Join-Path $smokeDir 'global.json') -Raw | ConvertFrom-Json
@@ -82,33 +98,21 @@ try {
     # 4. Generate adders; add each new csproj to the solution
     $slnx = 'Kongroo.Smoke.slnx'
 
-    dotnet new kongroo-lib   -n Kongroo.Smoke.Domain  -o src/Kongroo.Smoke.Domain
-    if ($LASTEXITCODE -ne 0) { throw 'kongroo-lib scaffold failed' }
-    dotnet sln $slnx add src/Kongroo.Smoke.Domain/Kongroo.Smoke.Domain.csproj
-    if ($LASTEXITCODE -ne 0) { throw 'sln add Domain failed' }
+    $adders = @(
+        @{ Template = 'kongroo-api';     Name = 'Kongroo.Smoke.Api';       Dir = 'src' },
+        @{ Template = 'kongroo-api';     Name = 'Kongroo.Smoke.Admin';     Dir = 'src' },
+        @{ Template = 'kongroo-lib';     Name = 'Kongroo.Smoke.Domain';    Dir = 'src' },
+        @{ Template = 'kongroo-test';    Name = 'Kongroo.Smoke.UnitTests'; Dir = 'test' },
+        @{ Template = 'kongroo-itest';   Name = 'Kongroo.Smoke.E2ETests';  Dir = 'test' }
+    )
 
-    dotnet new kongroo-api   -n Kongroo.Smoke.Gateway  -o src/Kongroo.Smoke.Gateway
-    if ($LASTEXITCODE -ne 0) { throw 'kongroo-api scaffold failed' }
-    dotnet sln $slnx add src/Kongroo.Smoke.Gateway/Kongroo.Smoke.Gateway.csproj
-    if ($LASTEXITCODE -ne 0) { throw 'sln add Gateway failed' }
-
-    # Two projects of the same adder type import the same Packages.props twice.
-    # Without the Remove line in the fragment that is NU1506 -> a hard error under
-    # TreatWarningsAsErrors, so this is the regression test for fragment idempotency.
-    dotnet new kongroo-api   -n Kongroo.Smoke.Admin  -o src/Kongroo.Smoke.Admin
-    if ($LASTEXITCODE -ne 0) { throw 'kongroo-api (second instance) scaffold failed' }
-    dotnet sln $slnx add src/Kongroo.Smoke.Admin/Kongroo.Smoke.Admin.csproj
-    if ($LASTEXITCODE -ne 0) { throw 'sln add Admin failed' }
-
-    dotnet new kongroo-test  -n Kongroo.Smoke.MoreTests  -o test/Kongroo.Smoke.MoreTests
-    if ($LASTEXITCODE -ne 0) { throw 'kongroo-test scaffold failed' }
-    dotnet sln $slnx add test/Kongroo.Smoke.MoreTests/Kongroo.Smoke.MoreTests.csproj
-    if ($LASTEXITCODE -ne 0) { throw 'sln add MoreTests failed' }
-
-    dotnet new kongroo-itest -n Kongroo.Smoke.E2ETests   -o test/Kongroo.Smoke.E2ETests
-    if ($LASTEXITCODE -ne 0) { throw 'kongroo-itest scaffold failed' }
-    dotnet sln $slnx add test/Kongroo.Smoke.E2ETests/Kongroo.Smoke.E2ETests.csproj
-    if ($LASTEXITCODE -ne 0) { throw 'sln add E2ETests failed' }
+    foreach ($adder in $adders) {
+        $out = "$($adder.Dir)/$($adder.Name)"
+        dotnet new $adder.Template -n $adder.Name -o $out
+        if ($LASTEXITCODE -ne 0) { throw "$($adder.Template) scaffold failed for $($adder.Name)" }
+        dotnet sln $slnx add "$out/$($adder.Name).csproj"
+        if ($LASTEXITCODE -ne 0) { throw "sln add failed for $($adder.Name)" }
+    }
 
     # 5. Build. The Smoke service repo builds in a non-git temp dir; under CI
     # (GITHUB_ACTIONS=true) any CI-only step (SourceLink etc.) would try to read git
@@ -121,21 +125,6 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'tests failed' }
 
     Assert-StyleRulesFire (Join-Path $smokeDir 'src/Kongroo.Smoke.Api')
-
-    # The observability=false path was never exercised before; Packages.props now carries
-    # a conditional, and a template engine that ignored it would leave OpenTelemetry
-    # PackageVersions behind (harmless) or drop needed ones (NU1010 at build).
-    $noObsDir = Join-Path $work 'NoObs'
-    dotnet new kongroo-sln -n Kongroo.NoObs -o $noObsDir --observability false
-    if ($LASTEXITCODE -ne 0) { throw 'kongroo-sln --observability false scaffold failed' }
-    if (Select-String -Path (Join-Path $noObsDir 'src/Kongroo.NoObs.Api/Packages.props') `
-            -Pattern 'OpenTelemetry' -Quiet) {
-        throw 'observability=false left OpenTelemetry PackageVersion entries in Packages.props'
-    }
-    Push-Location $noObsDir
-    dotnet build -warnaserror -p:ContinuousIntegrationBuild=false
-    if ($LASTEXITCODE -ne 0) { throw 'observability=false build failed' }
-    Pop-Location
 
     Pop-Location
 

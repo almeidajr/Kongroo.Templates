@@ -2,34 +2,9 @@
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 
-# --- 1. kongroo-api adder vs. sln copy ---
-# Only kongroo-api is a verbatim copy of the sln API; test/itest adders intentionally diverge.
-$apiSrc = Join-Path $root 'templates/kongroo-sln/src/Kongroo.SampleApp.Api'
-$apiAdder = Join-Path $root 'templates/kongroo-api'
-
-$apiFiles = @(
-    'Kongroo.SampleApp.Api.csproj',
-    'Packages.props',
-    'Program.cs',
-    'appsettings.json',
-    'appsettings.Development.json',
-    'Properties/launchSettings.json',
-    'Dockerfile',
-    '.dockerignore'
-)
-
 $drift = @()
-foreach ($f in $apiFiles) {
-    $a = Join-Path $apiAdder $f
-    $b = Join-Path $apiSrc $f
-    if (-not (Test-Path $a)) { $drift += "MISSING in adder: $f"; continue }
-    if (-not (Test-Path $b)) { $drift += "MISSING in sln: $f"; continue }
-    if ((Get-FileHash $a).Hash -ne (Get-FileHash $b).Hash) {
-        $drift += "DRIFT: templates/kongroo-api/$f differs from templates/kongroo-sln/src/Kongroo.SampleApp.Api/$f"
-    }
-}
 
-# --- 2. kongroo-nuget shared conventions vs. kongroo-sln ---
+# --- 1. kongroo-nuget shared conventions vs. kongroo-sln ---
 # These files are byte-identical copies; any drift means one scaffolder is out of date.
 $nugetDir = Join-Path $root 'templates/kongroo-nuget'
 $slnDir   = Join-Path $root 'templates/kongroo-sln'
@@ -64,7 +39,7 @@ foreach ($f in $sharedFiles) {
     }
 }
 
-# --- 3. Action versions across every workflow (root + templates) ---
+# --- 2. Action versions across every workflow (root + templates) ---
 # Dependabot only bumps the root copies; this makes the templates follow instead of drifting.
 # -Filter is silently ignored when -Path holds a wildcard, so enumerate the dirs explicitly.
 $workflowDirs = @(Join-Path $root '.github/workflows') + (

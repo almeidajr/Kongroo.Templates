@@ -103,7 +103,8 @@ try {
         @{ Template = 'kongroo-api';     Name = 'Kongroo.Smoke.Admin';     Dir = 'src' },
         @{ Template = 'kongroo-lib';     Name = 'Kongroo.Smoke.Domain';    Dir = 'src' },
         @{ Template = 'kongroo-test';    Name = 'Kongroo.Smoke.UnitTests'; Dir = 'test' },
-        @{ Template = 'kongroo-itest';   Name = 'Kongroo.Smoke.E2ETests';  Dir = 'test' }
+        @{ Template = 'kongroo-itest';   Name = 'Kongroo.Smoke.E2ETests';  Dir = 'test' },
+        @{ Template = 'kongroo-console'; Name = 'Kongroo.Smoke.Tool';      Dir = 'src' }
     )
 
     foreach ($adder in $adders) {
@@ -112,6 +113,14 @@ try {
         if ($LASTEXITCODE -ne 0) { throw "$($adder.Template) scaffold failed for $($adder.Name)" }
         dotnet sln $slnx add "$out/$($adder.Name).csproj"
         if ($LASTEXITCODE -ne 0) { throw "sln add failed for $($adder.Name)" }
+    }
+
+    # sourceName is Kongroo.SampleApp.Console and the body says Console.WriteLine. dotnet new
+    # replaces the whole sourceName string, not the trailing segment - assert that rather than
+    # trusting it, because a corrupted Program.cs would still be a valid-looking file.
+    $toolProgram = Get-Content (Join-Path $smokeDir 'src/Kongroo.Smoke.Tool/Program.cs') -Raw
+    if ($toolProgram -notmatch 'Console\.WriteLine') {
+        throw 'sourceName substitution mangled the console template Program.cs'
     }
 
     # 5. Build. The Smoke service repo builds in a non-git temp dir; under CI

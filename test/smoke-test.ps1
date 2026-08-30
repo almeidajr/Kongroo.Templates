@@ -185,6 +185,16 @@ try {
     Push-Location $libDir
     dotnet tool restore
     if ($LASTEXITCODE -ne 0) { throw 'lib tool restore failed' }
+
+    # A package repo holds several packages; one v* tag ships them all at the same version.
+    dotnet new kongroo-lib --packable -n Kongroo.Foo.Json -o src/Kongroo.Foo.Json
+    if ($LASTEXITCODE -ne 0) { throw 'kongroo-lib --packable scaffold failed' }
+    dotnet sln Kongroo.Foo.slnx add src/Kongroo.Foo.Json/Kongroo.Foo.Json.csproj
+    if ($LASTEXITCODE -ne 0) { throw 'sln add Kongroo.Foo.Json failed' }
+    if (-not (Test-Path (Join-Path $libDir 'src/Kongroo.Foo.Json/README.md'))) {
+        throw '--packable did not emit a per-package README'
+    }
+
     # non-git temp dir: disable CI build so SourceLink (CI-guarded on under GITHUB_ACTIONS) doesn't error
     dotnet build -warnaserror -p:ContinuousIntegrationBuild=false
     if ($LASTEXITCODE -ne 0) { throw 'lib build failed' }
@@ -192,9 +202,12 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'lib tests failed' }
     dotnet pack -c Release -o (Join-Path $libDir 'pkg') -p:ContinuousIntegrationBuild=false
     if ($LASTEXITCODE -ne 0) { throw 'lib pack failed' }
-    if (-not (Get-ChildItem (Join-Path $libDir 'pkg') -Filter '*.nupkg')) { throw 'no nupkg produced' }
-    if (-not (Get-ChildItem (Join-Path $libDir 'pkg') -Filter '*.snupkg')) { throw 'no snupkg produced' }
-    Assert-PackageIcon (Get-ChildItem (Join-Path $libDir 'pkg') -Filter '*.nupkg' | Where-Object Name -NotLike '*.snupkg' | Select-Object -First 1).FullName
+    $nupkgs = Get-ChildItem (Join-Path $libDir 'pkg') -Filter '*.nupkg' | Where-Object Name -NotLike '*.snupkg'
+    if ($nupkgs.Count -ne 2) {
+        throw "expected 2 packages (Kongroo.Foo, Kongroo.Foo.Json), got $($nupkgs.Count): $($nupkgs.Name -join ', ')"
+    }
+    if ((Get-ChildItem (Join-Path $libDir 'pkg') -Filter '*.snupkg').Count -ne 2) { throw 'expected 2 symbol packages' }
+    foreach ($pkg in $nupkgs) { Assert-PackageIcon $pkg.FullName }
     Pop-Location
 
     Write-Host 'SMOKE OK' -ForegroundColor Green

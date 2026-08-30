@@ -1,0 +1,5 @@
+#nullable enable
+Kongroo.SampleApp.Library.Class1
+Kongroo.SampleApp.Library.Class1.Class1() -> void
+Kongroo.SampleApp.Library.Class1.Name.get -> string!
+Kongroo.SampleApp.Library.Class1.Name.init -> void

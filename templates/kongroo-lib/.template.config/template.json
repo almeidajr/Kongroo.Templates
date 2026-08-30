@@ -1,15 +1,33 @@
 {
   "$schema": "http://json.schemastore.org/template",
   "author": "José Rogério de Almeida Júnior <almeidajr.vr@gmail.com>",
-  "classifications": ["Kongroo", "Library"],
+  "classifications": ["Kongroo", "Library", "NuGet"],
   "identity": "Kongroo.Templates.Library",
   "name": "Kongroo Class Library",
   "shortName": "kongroo-lib",
   "tags": { "language": "C#", "type": "project" },
   "sourceName": "Kongroo.SampleApp.Library",
   "preferNameDirectory": true,
+  "symbols": {
+    "packable": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Make the library publishable to nuget.org (packaging metadata, MinVer, SourceLink, public-API analyzers)."
+    }
+  },
   "primaryOutputs": [{ "path": "Kongroo.SampleApp.Library.csproj" }],
-  "sources": [{ "exclude": ["**/bin/**", "**/obj/**", ".template.config/**"] }],
+  "sources": [
+    {
+      "exclude": ["**/bin/**", "**/obj/**", ".template.config/**"],
+      "modifiers": [
+        {
+          "condition": "(!packable)",
+          "exclude": ["README.md", "PublicAPI.Shipped.txt", "PublicAPI.Unshipped.txt", "Packages.props"]
+        }
+      ]
+    }
+  ],
   "postActions": [
     {
       "id": "restore",

@@ -64,11 +64,16 @@ foreach ($f in $sharedFiles) {
 
 # --- 3. Action versions across every workflow (root + templates) ---
 # Dependabot only bumps the root copies; this makes the templates follow instead of drifting.
-$workflows = Get-ChildItem -File -Filter '*.yml' -Path `
-    (Join-Path $root '.github/workflows'), (Join-Path $root 'templates/*/.github/workflows')
+# -Filter is silently ignored when -Path holds a wildcard, so enumerate the dirs explicitly.
+$workflowDirs = @(Join-Path $root '.github/workflows') + (
+    Get-ChildItem (Join-Path $root 'templates') -Directory |
+        ForEach-Object { Join-Path $_.FullName '.github/workflows' } |
+        Where-Object { Test-Path $_ }
+)
+$workflows = $workflowDirs | ForEach-Object { Get-ChildItem -File -Filter '*.yml' -Path $_ }
 $actions = @{}
 foreach ($w in $workflows) {
-    $rel = $w.FullName.Replace("$root\", '').Replace('\', '/')
+    $rel = [System.IO.Path]::GetRelativePath($root, $w.FullName).Replace('\', '/')
     foreach ($m in [regex]::Matches((Get-Content $w.FullName -Raw), '(?m)uses:\s*(?<name>[^@\s]+)@(?<ver>\S+)')) {
         $name = $m.Groups['name'].Value
         $ver = $m.Groups['ver'].Value

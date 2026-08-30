@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <AnalysisLevel>10.0-recommended</AnalysisLevel>
     <Deterministic>true</Deterministic>
     <UseArtifactsOutput>true</UseArtifactsOutput>
     <!-- Generate XML docs (feeds OpenAPI/Scalar) but don't fail the build on missing doc comments. -->

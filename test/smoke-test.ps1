@@ -105,7 +105,8 @@ try {
         @{ Template = 'kongroo-test';    Name = 'Kongroo.Smoke.UnitTests'; Dir = 'test' },
         @{ Template = 'kongroo-itest';   Name = 'Kongroo.Smoke.E2ETests';  Dir = 'test' },
         @{ Template = 'kongroo-console'; Name = 'Kongroo.Smoke.Tool';      Dir = 'src' },
-        @{ Template = 'kongroo-worker';  Name = 'Kongroo.Smoke.Ingest';    Dir = 'src' }
+        @{ Template = 'kongroo-worker';  Name = 'Kongroo.Smoke.Ingest';    Dir = 'src' },
+        @{ Template = 'kongroo-cli';     Name = 'Kongroo.Smoke.Cli';       Dir = 'src' }
     )
 
     foreach ($adder in $adders) {

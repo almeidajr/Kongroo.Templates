@@ -80,6 +80,43 @@ foreach ($name in $actions.Keys | Sort-Object) {
     $detail = ($actions[$name].Keys | Sort-Object | ForEach-Object { "$_ in $($actions[$name][$_] -join ', ')" }) -join ' | '
     $drift += "ACTION DRIFT: $name pinned at $detail"
 }
+
+# --- 4. PackageVersion consistency across all Packages.props fragments ---
+# The Remove-then-Include idiom that keeps a fragment idempotent also suppresses NU1506, which is
+# the only diagnostic that would otherwise catch two fragments disagreeing on a shared package's
+# version. Without this check, a version bumped in one fragment only is resolved silently, by the
+# alphabetical order of the importing project directories.
+$fragments = Get-ChildItem (Join-Path $root 'templates') -Recurse -Filter 'Packages.props'
+$fragmentVersions = @{}
+foreach ($frag in $fragments) {
+    $rel = [System.IO.Path]::GetRelativePath($root, $frag.FullName).Replace('\', '/')
+    [xml]$fragXml = Get-Content $frag.FullName -Raw
+    $removeNames = @()
+    $includeNames = @()
+    foreach ($node in $fragXml.SelectNodes('//PackageVersion')) {
+        if ($node.Remove) { $removeNames += ($node.Remove -split ';' | Where-Object { $_ }) }
+        if ($node.Include) {
+            $includeNames += $node.Include
+            if (-not $fragmentVersions.ContainsKey($node.Include)) { $fragmentVersions[$node.Include] = @{} }
+            if (-not $fragmentVersions[$node.Include].ContainsKey($node.Version)) { $fragmentVersions[$node.Include][$node.Version] = @() }
+            $fragmentVersions[$node.Include][$node.Version] += $rel
+        }
+    }
+    $removeSet = $removeNames | Sort-Object -Unique
+    $includeSet = $includeNames | Sort-Object -Unique
+    foreach ($n in $removeSet | Where-Object { $includeSet -notcontains $_ }) {
+        $drift += "PACKAGES.PROPS: $rel removes '$n' but never includes it"
+    }
+    foreach ($n in $includeSet | Where-Object { $removeSet -notcontains $_ }) {
+        $drift += "PACKAGES.PROPS: $rel includes '$n' without removing it first; a second project of this adder will hit NU1506"
+    }
+}
+foreach ($name in $fragmentVersions.Keys | Sort-Object) {
+    if ($fragmentVersions[$name].Count -le 1) { continue }
+    $detail = ($fragmentVersions[$name].Keys | Sort-Object | ForEach-Object { "$_ in $($fragmentVersions[$name][$_] -join ', ')" }) -join ' | '
+    $drift += "PACKAGE VERSION DRIFT: $name pinned at $detail"
+}
+
 if ($drift) {
     $drift | ForEach-Object { Write-Error $_ }
     exit 1

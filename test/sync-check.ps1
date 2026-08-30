@@ -41,7 +41,21 @@ foreach ($f in $sharedFiles) {
     }
 }
 
-# --- 2. Action versions across every workflow (root + templates) ---
+# --- 2. release.yml: identical apart from each template's own sourceName ---
+# It cannot join $sharedFiles (the release title embeds sourceName), but everything
+# else must match, and it has drifted unobserved before.
+$sourceNames = @{ 'kongroo-sln' = 'Kongroo.SampleApp'; 'kongroo-nuget' = 'Kongroo.SampleLib' }
+$normalized = @{}
+foreach ($template in $sourceNames.Keys) {
+    $path = Join-Path $root "templates/$template/.github/workflows/release.yml"
+    if (-not (Test-Path $path)) { $drift += "MISSING release.yml in $template"; continue }
+    $normalized[$template] = (Get-Content $path -Raw).Replace($sourceNames[$template], '<SOURCENAME>')
+}
+if ($normalized.Count -eq 2 -and $normalized['kongroo-sln'] -ne $normalized['kongroo-nuget']) {
+    $drift += 'DRIFT: release.yml differs between kongroo-sln and kongroo-nuget beyond sourceName'
+}
+
+# --- 3. Action versions across every workflow (root + templates) ---
 # Dependabot only bumps the root copies; this makes the templates follow instead of drifting.
 # -Filter is silently ignored when -Path holds a wildcard, so enumerate the dirs explicitly.
 $workflowDirs = @(Join-Path $root '.github/workflows') + (

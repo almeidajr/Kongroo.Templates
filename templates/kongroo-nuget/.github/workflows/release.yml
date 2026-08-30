@@ -1,30 +1,40 @@
 name: release
-
 on:
   push:
     tags: ["v*"]
-
+permissions:
+  id-token: write
+  contents: write # create the GitHub Release
 jobs:
   publish:
     runs-on: ubuntu-latest
-    environment: release
-    permissions:
-      id-token: write
-      contents: write # create the GitHub Release
+    environment: release # secret scoping + optional approval gate
     steps:
       - uses: actions/checkout@v7
         with:
-          fetch-depth: 0 # MinVer needs full history + tags
+          fetch-depth: 0 # MinVer derives the version from git tags
       - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
       - run: dotnet pack -c Release -o ${{ runner.temp }}/pkg
-      - name: NuGet login (OIDC)
+      - uses: NuGet/login@v1
         id: login
-        uses: NuGet/login@v1
         with:
           user: ${{ secrets.NUGET_USER }} # nuget.org profile name, NOT email
-      - run: dotnet nuget push "${{ runner.temp }}/pkg/*.nupkg" --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: Push packages
+        run: |
+          # IsPackable is false repo-wide, so a repo with no packable project packs nothing.
+          # `dotnet nuget push` errors on a glob that matches nothing, so check first.
+          shopt -s nullglob
+          packages=("${{ runner.temp }}"/pkg/*.nupkg)
+          if [ ${#packages[@]} -eq 0 ]; then
+            echo "No packable projects; nothing to publish."
+            exit 0
+          fi
+          dotnet nuget push "${{ runner.temp }}/pkg/*.nupkg" \
+            --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate
 
       - name: Create GitHub Release
         env:
@@ -34,8 +44,6 @@ jobs:
           prev=$(git describe --tags --abbrev=0 "$GITHUB_REF_NAME^" 2>/dev/null || true)
           if [ -n "$prev" ]; then range="$prev..$GITHUB_REF_NAME"; else range="$GITHUB_REF_NAME"; fi
           {
-            echo "[NuGet](https://www.nuget.org/packages/Kongroo.SampleLib/$version)"
-            echo
             echo "## What's Changed"
             git log --no-merges --pretty='* %s (%h)' "$range"
             if [ -n "$prev" ]; then

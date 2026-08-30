@@ -21,7 +21,16 @@ jobs:
         id: login
         with:
           user: ${{ secrets.NUGET_USER }} # nuget.org profile name, NOT email
-      - run: |
+      - name: Push packages
+        run: |
+          # IsPackable is false repo-wide, so a repo with no packable project packs nothing.
+          # `dotnet nuget push` errors on a glob that matches nothing, so check first.
+          shopt -s nullglob
+          packages=("${{ runner.temp }}"/pkg/*.nupkg)
+          if [ ${#packages[@]} -eq 0 ]; then
+            echo "No packable projects; nothing to publish."
+            exit 0
+          fi
           dotnet nuget push "${{ runner.temp }}/pkg/*.nupkg" \
             --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" \
             --source https://api.nuget.org/v3/index.json \

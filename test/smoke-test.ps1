@@ -143,6 +143,15 @@ try {
     dotnet build -warnaserror -p:ContinuousIntegrationBuild=false
     if ($LASTEXITCODE -ne 0) { throw 'build failed' }
 
+    # 5b. A clean build proves nothing about the kongroo-cli DI bridge or exception-handler
+    # contract (e.g. a dropped UseAssemblyInformationalVersion, or GreetCommand failing to
+    # resolve IAnsiConsole) - those are runtime-only failures. UseArtifactsOutput means the
+    # binary isn't where a default build would put it, so `dotnet run --project` is simpler
+    # than hunting the output path.
+    $cliOutput = dotnet run --project src/Kongroo.Smoke.Cli -- greet World 2>&1 | Out-String
+    if ($LASTEXITCODE -ne 0) { throw "kongroo-cli run failed with exit code ${LASTEXITCODE}: $cliOutput" }
+    if ($cliOutput -notmatch 'Hello, World!') { throw "kongroo-cli greet did not print the expected greeting: $cliOutput" }
+
     # 6. Test (plain — no --tl:off, breaks MTP discovery)
     dotnet test
     if ($LASTEXITCODE -ne 0) { throw 'tests failed' }

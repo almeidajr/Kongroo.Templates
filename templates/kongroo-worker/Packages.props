@@ -1,4 +1,7 @@
 <Project>
+  <!-- Remove-then-Include keeps this fragment idempotent. A second worker project in the same
+       repo imports the same list again, and a duplicate PackageVersion is NU1506 - a hard
+       error under TreatWarningsAsErrors. -->
   <ItemGroup>
     <PackageVersion Remove="Microsoft.Extensions.Hosting;Serilog.Enrichers.Environment;Serilog.Enrichers.Process;Serilog.Enrichers.Thread;Serilog.Extensions.Hosting;Serilog.Settings.Configuration;Serilog.Sinks.Console" />
   </ItemGroup>

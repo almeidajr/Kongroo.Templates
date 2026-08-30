@@ -52,6 +52,7 @@ Scaffold a package repo, which comes with its first library already wired up:
 dotnet new kongroo-nuget -n Kongroo.Acme
 cd Kongroo.Acme
 dotnet new kongroo-lib --packable -n Kongroo.Acme.Json -o src/Kongroo.Acme.Json
+dotnet sln add src/Kongroo.Acme.Json/Kongroo.Acme.Json.csproj
 ```
 
 ### Options
@@ -70,7 +71,7 @@ dotnet new kongroo-lib --packable -n Kongroo.Acme.Json -o src/Kongroo.Acme.Json
 - **Testing**: xUnit v3 on Microsoft Testing Platform, with Bogus, NSubstitute, and Shouldly;
   integration tests use `WebApplicationFactory` and Testcontainers.
 - **Web API**: Serilog (with enrichers), OpenTelemetry tracing + metrics, the Scalar API reference,
-  health checks (`/health`, `/alive`), problem-details error handling, and a multi-stage HTTP-only Dockerfile.
+  health checks (`/health`, `/alive`), problem-details error handling, minimal-API validation, and a multi-stage HTTP-only Dockerfile.
 - **Worker service**: Serilog (with enrichers), OpenTelemetry tracing + metrics, and a multi-stage
   Dockerfile.
 - **CLI app**: Spectre.Console commands wired onto Microsoft.Extensions.DependencyInjection.
@@ -100,7 +101,7 @@ This repo dogfoods the same conventions it ships. From the repo root:
 ```bash
 dotnet tool restore                 # CSharpier
 pnpm install                        # Prettier + commitlint
-pwsh test/sync-check.ps1            # guard the kongroo-api adder against drift from the sln copy
+pwsh test/sync-check.ps1            # verify kongroo-nuget and kongroo-sln stay synchronized, release.yml consistency, action versions
 pwsh test/smoke-test.ps1            # pack → install → scaffold every template → build → test
 dotnet csharpier check .            # formatting (also enforced in CI)
 pnpm exec prettier --check .

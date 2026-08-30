@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Shouldly;
-using Xunit;
 
 namespace Kongroo.SampleApp.IntegrationTests;
 

@@ -62,6 +62,30 @@ csharp_style_prefer_pattern_matching = true:warning
 csharp_style_prefer_not_pattern = true:warning
 csharp_style_prefer_extended_property_pattern = true:warning
 
+# Functional: static closures cannot capture this/base/outer state
+# IDE0320 is IDE-only: it does not enforce on build in SDK 10.0.400. IDE0062 does.
+csharp_prefer_static_local_function = true:warning
+csharp_prefer_static_anonymous_function = true:warning
+
+# Expression over statement
+dotnet_style_prefer_conditional_expression_over_assignment = true:warning
+dotnet_style_prefer_conditional_expression_over_return = true:warning
+dotnet_style_prefer_simplified_boolean_expressions = true:warning
+dotnet_style_coalesce_expression = true:warning
+dotnet_style_null_propagation = true:warning
+dotnet_style_prefer_compound_assignment = true:warning
+
+# exactly_match, not the loose default: loose matching can change runtime types
+dotnet_style_prefer_collection_expression = when_types_exactly_match:warning
+
+csharp_style_prefer_method_group_conversion = true:warning
+csharp_style_prefer_index_operator = true:warning
+csharp_style_prefer_range_operator = true:warning
+csharp_style_prefer_tuple_swap = true:warning
+csharp_style_deconstructed_variable_declaration = true:warning
+csharp_style_unused_value_assignment_preference = discard_variable:warning
+dotnet_code_quality_unused_parameters = all:warning
+
 # Naming. First matching rule wins, so symbols are ordered specific -> general.
 # IDE1006 must be enabled explicitly or the naming rules below don't run in build.
 [*.{cs,vb}]

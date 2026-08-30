@@ -33,15 +33,17 @@ builder.Services.AddOpenApi();
 
 builder
     .Services.AddHealthChecks()
-    .AddCheck("self", () => HealthCheckResult.Healthy(), tags: ["live"])
+    .AddCheck("self", static () => HealthCheckResult.Healthy(), tags: ["live"])
     .AddResourceUtilizationHealthCheck();
 
 #if (observability)
 builder
     .Services.AddOpenTelemetry()
     .ConfigureResource(resource => resource.AddService(builder.Environment.ApplicationName))
-    .WithTracing(tracing => tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation().AddOtlpExporter())
-    .WithMetrics(metrics =>
+    .WithTracing(static tracing =>
+        tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation().AddOtlpExporter()
+    )
+    .WithMetrics(static metrics =>
         metrics
             .AddAspNetCoreInstrumentation()
             .AddHttpClientInstrumentation()
@@ -72,6 +74,6 @@ app.MapHealthChecks(
     }
 );
 
-app.MapGet("/", () => "Kongroo.SampleApp.Api");
+app.MapGet("/", static () => "Kongroo.SampleApp.Api");
 
 await app.RunAsync();

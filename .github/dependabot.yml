@@ -1,0 +1,41 @@
+version: 2
+updates:
+  # Root-only by design: the ecosystem can't scan templates/*/.github/workflows.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: chore
+    groups:
+      actions:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: nuget
+    directories:
+      - /
+      - /templates/kongroo-sln
+      - /templates/kongroo-nuget
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: chore
+    groups:
+      nuget:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directories:
+      - /
+      - /templates/kongroo-sln
+      - /templates/kongroo-nuget
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: chore
+    groups:
+      npm:
+        patterns: ["*"]
+        update-types: [minor, patch]

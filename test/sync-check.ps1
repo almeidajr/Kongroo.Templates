@@ -48,7 +48,8 @@ $sharedFiles = @(
     'LICENSE',
     'global.json',
     'nuget.config',
-    '.github/workflows/ci.yml'
+    '.github/workflows/ci.yml',
+    '.github/dependabot.yml'
 )
 
 foreach ($f in $sharedFiles) {
@@ -61,6 +62,26 @@ foreach ($f in $sharedFiles) {
     }
 }
 
+# --- 3. Action versions across every workflow (root + templates) ---
+# Dependabot only bumps the root copies; this makes the templates follow instead of drifting.
+$workflows = Get-ChildItem -File -Filter '*.yml' -Path `
+    (Join-Path $root '.github/workflows'), (Join-Path $root 'templates/*/.github/workflows')
+$actions = @{}
+foreach ($w in $workflows) {
+    $rel = $w.FullName.Replace("$root\", '').Replace('\', '/')
+    foreach ($m in [regex]::Matches((Get-Content $w.FullName -Raw), '(?m)uses:\s*(?<name>[^@\s]+)@(?<ver>\S+)')) {
+        $name = $m.Groups['name'].Value
+        $ver = $m.Groups['ver'].Value
+        if (-not $actions.ContainsKey($name)) { $actions[$name] = @{} }
+        if (-not $actions[$name].ContainsKey($ver)) { $actions[$name][$ver] = @() }
+        $actions[$name][$ver] += $rel
+    }
+}
+foreach ($name in $actions.Keys | Sort-Object) {
+    if ($actions[$name].Count -le 1) { continue }
+    $detail = ($actions[$name].Keys | Sort-Object | ForEach-Object { "$_ in $($actions[$name][$_] -join ', ')" }) -join ' | '
+    $drift += "ACTION DRIFT: $name pinned at $detail"
+}
 if ($drift) {
     $drift | ForEach-Object { Write-Error $_ }
     exit 1

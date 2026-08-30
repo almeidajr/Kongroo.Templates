@@ -5,7 +5,7 @@ $art  = Join-Path $root 'artifacts'
 $work = Join-Path ([System.IO.Path]::GetTempPath()) "kongroo-smoke-$([System.IO.Path]::GetRandomFileName())"
 New-Item -ItemType Directory -Force -Path $work | Out-Null
 
-# Packed icon: PackageIcon must resolve to a file at the package root, else nuget.org shows nothing.
+# PackageIcon must resolve to a file at the package root, else nuget.org shows no icon.
 function Assert-PackageIcon([string]$NupkgPath) {
     $name = Split-Path $NupkgPath -Leaf
     $zip = [System.IO.Compression.ZipFile]::OpenRead($NupkgPath)
@@ -93,8 +93,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'kongroo-nuget scaffold failed' }
     if (Test-Path (Join-Path $libDir '.template.config')) { throw '.template.config leaked into kongroo-nuget output' }
     if (-not (Test-Path (Join-Path $libDir 'assets/icon-32.png'))) { throw 'assets/icon-32.png missing from kongroo-nuget output' }
-    # The README title logo is an absolute URL (nuget.org drops relative paths) built from sourceName --
-    # it 404s silently on the package page if the almeidajr/<PackageId> repo convention ever drifts.
+    # sourceName-substituted URL; 404s silently on nuget.org if the repo naming convention drifts.
     if ((Get-Content (Join-Path $libDir 'README.md') -TotalCount 1) -notmatch 'almeidajr/Kongroo\.Foo/main/assets/icon-32\.png') {
         throw 'README title logo URL did not substitute to the scaffolded project name'
     }

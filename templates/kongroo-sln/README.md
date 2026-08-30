@@ -12,16 +12,27 @@ pnpm install              # Prettier + commitlint
 
 ## Adding projects
 
-Each adder creates a project and prints the `dotnet sln add` command to wire it in.
+Each adder creates a project on disk; it is not wired into the solution until you also run
+`dotnet sln add` on its `.csproj`. The empty `.slnx` routes each project into the matching `/src/`
+or `/test/` folder automatically, based on the path you give it.
 
 ```bash
-dotnet new kongroo-api     -n Kongroo.SampleApp.Api    -o src/Kongroo.SampleApp.Api
+dotnet new kongroo-api -n Kongroo.SampleApp.Api -o src/Kongroo.SampleApp.Api
+dotnet sln add src/Kongroo.SampleApp.Api/Kongroo.SampleApp.Api.csproj
+
+dotnet new kongroo-test -n Kongroo.SampleApp.UnitTests -o test/Kongroo.SampleApp.UnitTests
+dotnet sln add test/Kongroo.SampleApp.UnitTests/Kongroo.SampleApp.UnitTests.csproj
+```
+
+The other adders follow the same two-command pattern:
+
+```bash
 dotnet new kongroo-worker  -n Kongroo.SampleApp.Worker -o src/Kongroo.SampleApp.Worker
 dotnet new kongroo-cli     -n Kongroo.SampleApp.Cli    -o src/Kongroo.SampleApp.Cli
 dotnet new kongroo-console -n Kongroo.SampleApp.Tool   -o src/Kongroo.SampleApp.Tool
 dotnet new kongroo-lib     -n Kongroo.SampleApp.Domain -o src/Kongroo.SampleApp.Domain
-dotnet new kongroo-test    -n Kongroo.SampleApp.UnitTests -o test/Kongroo.SampleApp.UnitTests
 dotnet new kongroo-itest   -n Kongroo.SampleApp.IntegrationTests -o test/Kongroo.SampleApp.IntegrationTests
+# then: dotnet sln add <path passed to -o above>/<ProjectName>.csproj
 ```
 
 ## Package versions

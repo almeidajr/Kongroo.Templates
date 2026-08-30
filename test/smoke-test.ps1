@@ -129,6 +129,17 @@ try {
         throw 'observability=false left OpenTelemetry PackageVersion entries in Packages.props'
     }
 
+    # Same regression, API side. kongroo-api's OpenTelemetry set is not the worker's - it also
+    # carries OpenTelemetry.Instrumentation.AspNetCore - so the worker pass above does not cover it.
+    dotnet new kongroo-api -n Kongroo.Smoke.ApiPlain -o src/Kongroo.Smoke.ApiPlain --observability false
+    if ($LASTEXITCODE -ne 0) { throw 'kongroo-api --observability false scaffold failed' }
+    dotnet sln $slnx add src/Kongroo.Smoke.ApiPlain/Kongroo.Smoke.ApiPlain.csproj
+    if ($LASTEXITCODE -ne 0) { throw 'sln add ApiPlain failed' }
+    if (Select-String -Path (Join-Path $smokeDir 'src/Kongroo.Smoke.ApiPlain/Packages.props') `
+            -Pattern 'OpenTelemetry' -Quiet) {
+        throw 'observability=false left OpenTelemetry PackageVersion entries in Packages.props'
+    }
+
     # sourceName is Kongroo.SampleApp.Console and the body says Console.WriteLine. dotnet new
     # replaces the whole sourceName string, not the trailing segment - assert that rather than
     # trusting it, because a corrupted Program.cs would still be a valid-looking file.

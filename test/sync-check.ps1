@@ -9,6 +9,7 @@ $apiAdder = Join-Path $root 'templates/kongroo-api'
 
 $apiFiles = @(
     'Kongroo.SampleApp.Api.csproj',
+    'Packages.props',
     'Program.cs',
     'appsettings.json',
     'appsettings.Development.json',
@@ -35,6 +36,7 @@ $slnDir   = Join-Path $root 'templates/kongroo-sln'
 
 $sharedFiles = @(
     'Directory.Build.props',
+    'Directory.Packages.props',
     '.editorconfig',
     '.gitignore',
     '.gitattributes',

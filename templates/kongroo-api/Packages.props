@@ -1,0 +1,31 @@
+<Project>
+  <!-- Remove-then-Include keeps this fragment idempotent. A second API project in the same
+       repo imports the same list again, and a duplicate PackageVersion is NU1506 - a hard
+       error under TreatWarningsAsErrors. -->
+  <ItemGroup>
+    <PackageVersion Remove="AspNetCore.HealthChecks.UI.Client;Microsoft.AspNetCore.OpenApi;Microsoft.Extensions.Diagnostics.HealthChecks.Common;Microsoft.Extensions.Diagnostics.HealthChecks.ResourceUtilization;Scalar.AspNetCore;Serilog.AspNetCore;Serilog.Enrichers.Environment;Serilog.Enrichers.Process;Serilog.Enrichers.Thread" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.Common" Version="10.9.0" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.ResourceUtilization" Version="10.9.0" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.17.2" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
+    <PackageVersion Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+    <PackageVersion Include="Serilog.Enrichers.Process" Version="3.0.0" />
+    <PackageVersion Include="Serilog.Enrichers.Thread" Version="4.0.0" />
+  </ItemGroup>
+  <!--#if (observability)-->
+  <ItemGroup>
+    <PackageVersion Remove="OpenTelemetry.Exporter.OpenTelemetryProtocol;OpenTelemetry.Extensions.Hosting;OpenTelemetry.Instrumentation.AspNetCore;OpenTelemetry.Instrumentation.Http;OpenTelemetry.Instrumentation.Runtime" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.18.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.18.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.18.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.18.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.18.0" />
+  </ItemGroup>
+  <!--#endif-->
+</Project>

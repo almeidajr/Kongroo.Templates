@@ -92,6 +92,14 @@ try {
     dotnet sln $slnx add src/Kongroo.Smoke.Gateway/Kongroo.Smoke.Gateway.csproj
     if ($LASTEXITCODE -ne 0) { throw 'sln add Gateway failed' }
 
+    # Two projects of the same adder type import the same Packages.props twice.
+    # Without the Remove line in the fragment that is NU1506 -> a hard error under
+    # TreatWarningsAsErrors, so this is the regression test for fragment idempotency.
+    dotnet new kongroo-api   -n Kongroo.Smoke.Admin  -o src/Kongroo.Smoke.Admin
+    if ($LASTEXITCODE -ne 0) { throw 'kongroo-api (second instance) scaffold failed' }
+    dotnet sln $slnx add src/Kongroo.Smoke.Admin/Kongroo.Smoke.Admin.csproj
+    if ($LASTEXITCODE -ne 0) { throw 'sln add Admin failed' }
+
     dotnet new kongroo-test  -n Kongroo.Smoke.MoreTests  -o test/Kongroo.Smoke.MoreTests
     if ($LASTEXITCODE -ne 0) { throw 'kongroo-test scaffold failed' }
     dotnet sln $slnx add test/Kongroo.Smoke.MoreTests/Kongroo.Smoke.MoreTests.csproj
@@ -113,6 +121,21 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'tests failed' }
 
     Assert-StyleRulesFire (Join-Path $smokeDir 'src/Kongroo.Smoke.Api')
+
+    # The observability=false path was never exercised before; Packages.props now carries
+    # a conditional, and a template engine that ignored it would leave OpenTelemetry
+    # PackageVersions behind (harmless) or drop needed ones (NU1010 at build).
+    $noObsDir = Join-Path $work 'NoObs'
+    dotnet new kongroo-sln -n Kongroo.NoObs -o $noObsDir --observability false
+    if ($LASTEXITCODE -ne 0) { throw 'kongroo-sln --observability false scaffold failed' }
+    if (Select-String -Path (Join-Path $noObsDir 'src/Kongroo.NoObs.Api/Packages.props') `
+            -Pattern 'OpenTelemetry' -Quiet) {
+        throw 'observability=false left OpenTelemetry PackageVersion entries in Packages.props'
+    }
+    Push-Location $noObsDir
+    dotnet build -warnaserror -p:ContinuousIntegrationBuild=false
+    if ($LASTEXITCODE -ne 0) { throw 'observability=false build failed' }
+    Pop-Location
 
     Pop-Location
 

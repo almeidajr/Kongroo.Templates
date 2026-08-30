@@ -1,4 +1,4 @@
-# Kongroo.SampleApp
+# ![Kongroo](assets/icon-32.png) Kongroo.SampleApp
 
 Scaffolded from the Kongroo solution template (`dotnet new kongroo-sln`).
 

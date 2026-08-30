@@ -1,4 +1,4 @@
-# 🦘 Kongroo.Templates
+# ![Kongroo](https://raw.githubusercontent.com/almeidajr/Kongroo.Templates/main/assets/icon-32.png) Kongroo.Templates
 
 [![CI](https://github.com/almeidajr/Kongroo.Templates/actions/workflows/ci.yml/badge.svg)](https://github.com/almeidajr/Kongroo.Templates/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/Kongroo.Templates.svg)](https://www.nuget.org/packages/Kongroo.Templates)

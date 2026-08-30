@@ -1,4 +1,4 @@
-# Kongroo.SampleLib
+# ![Kongroo](https://raw.githubusercontent.com/almeidajr/Kongroo.SampleLib/main/assets/icon-32.png) Kongroo.SampleLib
 
 <one-line description of the library>
 

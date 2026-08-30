@@ -5,12 +5,28 @@ $art  = Join-Path $root 'artifacts'
 $work = Join-Path ([System.IO.Path]::GetTempPath()) "kongroo-smoke-$([System.IO.Path]::GetRandomFileName())"
 New-Item -ItemType Directory -Force -Path $work | Out-Null
 
+# Packed icon: PackageIcon must resolve to a file at the package root, else nuget.org shows nothing.
+function Assert-PackageIcon([string]$NupkgPath) {
+    $name = Split-Path $NupkgPath -Leaf
+    $zip = [System.IO.Compression.ZipFile]::OpenRead($NupkgPath)
+    try {
+        if (-not ($zip.Entries | Where-Object FullName -EQ 'icon.png')) { throw "icon.png missing from $name" }
+        $nuspec = $zip.Entries | Where-Object FullName -Like '*.nuspec' | Select-Object -First 1
+        if (-not $nuspec) { throw "nuspec missing from $name" }
+        $reader = New-Object System.IO.StreamReader $nuspec.Open()
+        try { $xml = $reader.ReadToEnd() } finally { $reader.Dispose() }
+        if ($xml -notmatch '<icon>icon\.png</icon>') { throw "<icon> missing from nuspec in $name" }
+    }
+    finally { $zip.Dispose() }
+}
+
 # 1. Pack and install
 dotnet pack (Join-Path $root 'Kongroo.Templates.csproj') -c Release -o $art
 if ($LASTEXITCODE -ne 0) { throw 'pack failed' }
 
 $nupkg = Get-ChildItem $art -Filter 'Kongroo.Templates.*.nupkg' | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 if (-not $nupkg) { throw 'nupkg not found in artifacts/' }
+Assert-PackageIcon $nupkg.FullName
 
 dotnet new install $nupkg.FullName --force
 if ($LASTEXITCODE -ne 0) { throw 'template install failed' }
@@ -21,6 +37,7 @@ try {
     dotnet new kongroo-sln -n Kongroo.Smoke -o $smokeDir
     if ($LASTEXITCODE -ne 0) { throw 'kongroo-sln scaffold failed' }
     if (Test-Path (Join-Path $smokeDir '.template.config')) { throw '.template.config leaked into kongroo-sln output' }
+    if (-not (Test-Path (Join-Path $smokeDir 'assets/icon-32.png'))) { throw 'assets/icon-32.png missing from kongroo-sln output' }
 
     # global.json must carry a full feature-band SDK version when rollForward is set,
     # else setup-dotnet (used by the scaffolded repo's CI) rejects it: "Version 'x.y.0' is not valid".
@@ -75,6 +92,12 @@ try {
     dotnet new kongroo-nuget -n Kongroo.Foo -o $libDir
     if ($LASTEXITCODE -ne 0) { throw 'kongroo-nuget scaffold failed' }
     if (Test-Path (Join-Path $libDir '.template.config')) { throw '.template.config leaked into kongroo-nuget output' }
+    if (-not (Test-Path (Join-Path $libDir 'assets/icon-32.png'))) { throw 'assets/icon-32.png missing from kongroo-nuget output' }
+    # The README title logo is an absolute URL (nuget.org drops relative paths) built from sourceName --
+    # it 404s silently on the package page if the almeidajr/<PackageId> repo convention ever drifts.
+    if ((Get-Content (Join-Path $libDir 'README.md') -TotalCount 1) -notmatch 'almeidajr/Kongroo\.Foo/main/assets/icon-32\.png') {
+        throw 'README title logo URL did not substitute to the scaffolded project name'
+    }
     Push-Location $libDir
     dotnet tool restore
     if ($LASTEXITCODE -ne 0) { throw 'lib tool restore failed' }
@@ -87,6 +110,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'lib pack failed' }
     if (-not (Get-ChildItem (Join-Path $libDir 'pkg') -Filter '*.nupkg')) { throw 'no nupkg produced' }
     if (-not (Get-ChildItem (Join-Path $libDir 'pkg') -Filter '*.snupkg')) { throw 'no snupkg produced' }
+    Assert-PackageIcon (Get-ChildItem (Join-Path $libDir 'pkg') -Filter '*.nupkg' | Where-Object Name -NotLike '*.snupkg' | Select-Object -First 1).FullName
     Pop-Location
 
     Write-Host 'SMOKE OK' -ForegroundColor Green

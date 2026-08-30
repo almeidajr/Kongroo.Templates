@@ -4,7 +4,6 @@
     <RootNamespace>Kongroo.SampleApp.UnitTests</RootNamespace>
     <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
     <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
-    <!-- ponytail: underscore_naming is idiomatic in test methods; CA1707 doesn't apply here -->
     <NoWarn>$(NoWarn);CA1707</NoWarn>
   </PropertyGroup>
 

@@ -10,7 +10,7 @@ jobs:
     environment: release
     permissions:
       id-token: write
-      contents: read
+      contents: write # create the GitHub Release
     steps:
       - uses: actions/checkout@v7
         with:
@@ -25,3 +25,24 @@ jobs:
         with:
           user: ${{ secrets.NUGET_USER }} # nuget.org profile name, NOT email
       - run: dotnet nuget push "${{ runner.temp }}/pkg/*.nupkg" --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          prev=$(git describe --tags --abbrev=0 "$GITHUB_REF_NAME^" 2>/dev/null || true)
+          if [ -n "$prev" ]; then range="$prev..$GITHUB_REF_NAME"; else range="$GITHUB_REF_NAME"; fi
+          {
+            echo "[NuGet](https://www.nuget.org/packages/Kongroo.SampleLib/$version)"
+            echo
+            echo "## What's Changed"
+            git log --no-merges --pretty='* %s (%h)' "$range"
+            if [ -n "$prev" ]; then
+              echo
+              echo "**Full Changelog**: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/compare/$prev...$GITHUB_REF_NAME"
+            fi
+          } > "$RUNNER_TEMP/notes.md"
+          flags=(--verify-tag --title "Kongroo.SampleLib $version" --notes-file "$RUNNER_TEMP/notes.md")
+          case "$version" in *-*) flags+=(--prerelease) ;; esac
+          gh release create "$GITHUB_REF_NAME" "${flags[@]}"

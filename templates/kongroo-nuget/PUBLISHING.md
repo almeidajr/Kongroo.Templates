@@ -21,5 +21,7 @@ tag (`v1.2.3` → `1.2.3`).
 git tag v1.0.0 && git push origin v1.0.0
 ```
 
-The release workflow packs the project and publishes the version derived from the
-tag. `--skip-duplicate` makes re-runs safe.
+The release workflow packs the project, publishes the version derived from the tag, and
+creates the matching GitHub Release with the commit subjects since the previous tag.
+`--skip-duplicate` makes re-runs safe; a prerelease tag (`v1.0.0-preview.1`) is marked as a
+prerelease and does not become `Latest`.

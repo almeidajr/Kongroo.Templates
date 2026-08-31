@@ -136,11 +136,11 @@ try {
         }
     }
 
-    # sourceName is Kongroo.SampleApp.Console and the body says Console.WriteLine. dotnet new
-    # replaces the whole sourceName string, not the trailing segment - assert that rather than
-    # trusting it, because a corrupted Program.cs would still be a valid-looking file.
+    # sourceName is Kongroo.SampleApp.Console and the body says AnsiConsole. dotnet new replaces
+    # the whole sourceName string, not the trailing segment - assert that rather than trusting it,
+    # because a corrupted Program.cs would still be a valid-looking file.
     $toolProgram = Get-Content (Join-Path $smokeDir 'src/Kongroo.Smoke.Tool/Program.cs') -Raw
-    if ($toolProgram -notmatch 'Console\.WriteLine') {
+    if ($toolProgram -notmatch 'AnsiConsole\.MarkupLine') {
         throw 'sourceName substitution mangled the console template Program.cs'
     }
 
@@ -158,6 +158,21 @@ try {
     $cliOutput = dotnet run --project src/Kongroo.Smoke.Cli -- greet World 2>&1 | Out-String
     if ($LASTEXITCODE -ne 0) { throw "kongroo-cli run failed with exit code ${LASTEXITCODE}: $cliOutput" }
     if ($cliOutput -notmatch 'Hello, World!') { throw "kongroo-cli greet did not print the expected greeting: $cliOutput" }
+
+    # 5c. Build both images. Nothing exercised these Dockerfiles before, so a wrong COPY path or a
+    # failing restore shipped silently. The build context is the repo root because CPM needs
+    # Directory.Packages.props, which is also why .dockerignore lives there and not beside a csproj.
+    if ((Get-Command docker -ErrorAction SilentlyContinue) -and (docker info 2>$null)) {
+        foreach ($image in 'Api', 'Ingest') {
+            $tag = "kongroo-smoke-$($image.ToLowerInvariant())"
+            docker build -f "src/Kongroo.Smoke.$image/Dockerfile" -t $tag .
+            if ($LASTEXITCODE -ne 0) { throw "docker build failed for Kongroo.Smoke.$image" }
+            docker image rm -f $tag | Out-Null
+        }
+    }
+    else {
+        Write-Host 'Docker unavailable - skipping image builds' -ForegroundColor Yellow
+    }
 
     # 6. Test (plain — no --tl:off, breaks MTP discovery)
     dotnet test

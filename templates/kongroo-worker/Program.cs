@@ -1,7 +1,5 @@
 using System.Globalization;
 using Kongroo.SampleApp.Worker;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Serilog;
 #if (observability)
 using OpenTelemetry.Metrics;
@@ -36,6 +34,7 @@ builder
     );
 #endif
 
+builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddHostedService<SampleWorker>();
 
 var host = builder.Build();

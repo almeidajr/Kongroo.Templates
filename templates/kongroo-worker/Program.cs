@@ -34,6 +34,7 @@ builder
     );
 #endif
 
+builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddHostedService<SampleWorker>();
 
 var host = builder.Build();

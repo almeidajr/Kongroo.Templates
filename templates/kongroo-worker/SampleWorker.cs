@@ -7,11 +7,11 @@ public sealed class SampleWorker(ILogger<SampleWorker> logger, TimeProvider time
     {
         // Cancelling stoppingToken makes WaitForNextTickAsync throw OperationCanceledException,
         // which the host treats as a normal shutdown — this deliberately has no catch.
-        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(5), timeProvider);
 
         while (await timer.WaitForNextTickAsync(stoppingToken))
         {
-            logger.LogInformation("Worker ran at {Timestamp:o}", DateTimeOffset.UtcNow);
+            logger.LogInformation("Worker ran at {Timestamp:o}", timeProvider.GetUtcNow());
         }
     }
 }

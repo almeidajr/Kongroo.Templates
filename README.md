@@ -27,7 +27,7 @@ it with `dotnet new uninstall Kongroo.Templates`.
 | Web API           | `kongroo-api`     | An ASP.NET Core minimal API (Serilog, OpenTelemetry, Scalar, health checks, problem details, Dockerfile) |
 | Worker service    | `kongroo-worker`  | A Generic Host `BackgroundService` (Serilog, OpenTelemetry, Dockerfile)                                  |
 | CLI app           | `kongroo-cli`     | A Spectre.Console `CommandApp` wired onto Microsoft.Extensions.DependencyInjection                       |
-| Console app       | `kongroo-console` | A plain console app, no packages                                                                         |
+| Console app       | `kongroo-console` | A console app with Spectre.Console rendering and its analyzer                                            |
 | Class library     | `kongroo-lib`     | A class library; `--packable` makes it publishable                                                       |
 | Unit tests        | `kongroo-test`    | An xUnit v3 project on Microsoft Testing Platform (Bogus, NSubstitute, Shouldly)                         |
 | Integration tests | `kongroo-itest`   | An xUnit v3 project with `WebApplicationFactory` + Testcontainers                                        |
@@ -74,10 +74,12 @@ dotnet sln add src/Kongroo.Acme.Json/Kongroo.Acme.Json.csproj
 - **Testing**: xUnit v3 on Microsoft Testing Platform, with Bogus, NSubstitute, and Shouldly;
   integration tests use `WebApplicationFactory` and Testcontainers.
 - **Web API**: Serilog (with enrichers), OpenTelemetry tracing + metrics, the Scalar API reference,
-  health checks (`/health`, `/alive`), problem-details error handling, minimal-API validation, and a multi-stage HTTP-only Dockerfile.
-- **Worker service**: Serilog (with enrichers), OpenTelemetry tracing + metrics, and a multi-stage
-  Dockerfile.
+  health checks (`/health`, `/alive`), problem-details error handling, and minimal-API validation.
+- **Worker service**: Serilog (with enrichers), OpenTelemetry tracing + metrics.
 - **CLI app**: Spectre.Console commands wired onto Microsoft.Extensions.DependencyInjection.
+- **Containers**: the Web API and worker ship a multi-stage Dockerfile that restores in its own
+  cacheable layer, so editing source does not re-restore. The build context is the repo root, which
+  is where the `.dockerignore` lives.
 - **CI/CD**: GitHub Actions for build/test, plus keyless publishing to nuget.org via
   [trusted publishing (OIDC)](https://learn.microsoft.com/nuget/nuget-org/trusted-publishing).
 

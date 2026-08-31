@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Kongroo.SampleApp.Worker": {
+      "commandName": "Project",
+      "environmentVariables": { "DOTNET_ENVIRONMENT": "Development" }
+    }
+  }
+}

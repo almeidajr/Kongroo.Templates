@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Kongroo.SampleApp.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": "greet World"
+    }
+  }
+}

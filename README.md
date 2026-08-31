@@ -65,7 +65,10 @@ dotnet sln add src/Kongroo.Acme.Json/Kongroo.Acme.Json.csproj
 ## What's baked in
 
 - **Target**: `net10.0`, nullable + implicit usings, warnings-as-errors, latest .NET analyzers.
-- **Solution & packages**: `.slnx` format and Central Package Management. Each project owns its versions in a `Packages.props` beside its `.csproj`; the root `Directory.Packages.props` holds the repo-wide analyzer and glob-imports the rest. Publishing is opt-in — `IsPackable` is `false` repo-wide, so a private library cannot reach nuget.org by accident.
+- **Solution & packages**: `.slnx` format and Central Package Management — one
+  `Directory.Packages.props` holding every version an adder can reference, so adding a project never
+  means hunting for versions first. Publishing is opt-in: `IsPackable` is `false` repo-wide, so a
+  private library cannot reach nuget.org by accident.
 - **Formatting & hooks**: CSharpier (C#), Prettier (JSON/YAML/Markdown), commitlint (Conventional
   Commits) — orchestrated by pre-commit, with a repo-root tool manifest.
 - **Testing**: xUnit v3 on Microsoft Testing Platform, with Bogus, NSubstitute, and Shouldly;

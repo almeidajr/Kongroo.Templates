@@ -8,23 +8,13 @@ public sealed class SampleWorker(ILogger<SampleWorker> logger) : BackgroundServi
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        // PeriodicTimer over Task.Delay: it does not drift. Cancellation of stoppingToken during
-        // host shutdown is expected and harmless, so it is swallowed below; the log line after
-        // the try/catch then prints a clean single line instead of a cancellation stack trace.
-        try
-        {
-            using var timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
+        // Cancelling stoppingToken makes WaitForNextTickAsync throw OperationCanceledException,
+        // which the host treats as a normal shutdown — this deliberately has no catch.
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
 
-            while (await timer.WaitForNextTickAsync(stoppingToken))
-            {
-                logger.LogInformation("Worker ran at {Timestamp:o}", DateTimeOffset.UtcNow);
-            }
-        }
-        catch (OperationCanceledException)
+        while (await timer.WaitForNextTickAsync(stoppingToken))
         {
-            // Expected during host shutdown; fall through to the log line below.
+            logger.LogInformation("Worker ran at {Timestamp:o}", DateTimeOffset.UtcNow);
         }
-
-        logger.LogInformation("Worker stopping.");
     }
 }

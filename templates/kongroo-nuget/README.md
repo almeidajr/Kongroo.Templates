@@ -2,14 +2,19 @@
 
 <one-line description of the library>
 
-## Install
+## Packages
+
+| Package             | Source                  |
+| ------------------- | ----------------------- |
+| `Kongroo.SampleLib` | `src/Kongroo.SampleLib` |
+
+Each package documents itself in its own `README.md`, which is what nuget.org shows.
+
+## Adding another package
 
 ```bash
-dotnet add package Kongroo.SampleLib
+dotnet new kongroo-lib --packable -n Kongroo.SampleLib.Extras -o src/Kongroo.SampleLib.Extras
+dotnet sln add src/Kongroo.SampleLib.Extras/Kongroo.SampleLib.Extras.csproj
 ```
 
-## Usage
-
-```csharp
-// example usage
-```
+One `v*` tag packs and publishes every packable project at the same version.

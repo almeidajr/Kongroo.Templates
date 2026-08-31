@@ -1,0 +1,15 @@
+<Project>
+  <ItemGroup>
+    <PackageVersion Remove="Microsoft.Extensions.DependencyInjection;Spectre.Console;Spectre.Console.Analyzer;Spectre.Console.Cli;Spectre.Console.Cli.Testing;Spectre.Console.Testing" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
+    <PackageVersion Include="Spectre.Console" Version="0.57.2" />
+    <PackageVersion Include="Spectre.Console.Analyzer" Version="1.0.0" />
+    <PackageVersion Include="Spectre.Console.Cli" Version="0.55.0" />
+    <!-- For a companion test project. Spectre.Console and Spectre.Console.Cli version
+         independently, and CommandAppTester moved to its own package at 0.54.0. -->
+    <PackageVersion Include="Spectre.Console.Cli.Testing" Version="0.55.0" />
+    <PackageVersion Include="Spectre.Console.Testing" Version="0.57.2" />
+  </ItemGroup>
+</Project>

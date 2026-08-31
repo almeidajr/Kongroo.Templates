@@ -9,6 +9,10 @@
     <AnalysisLevel>10.0-recommended</AnalysisLevel>
     <Deterministic>true</Deterministic>
     <UseArtifactsOutput>true</UseArtifactsOutput>
+    <!-- Publishing is opt-in. Without this a plain class library packs by default, so a private
+         project reaches nuget.org on the first `git tag v1.0.0`. kongroo-lib's packable switch
+         sets IsPackable back to true. -->
+    <IsPackable>false</IsPackable>
     <!-- Generate XML docs (feeds OpenAPI/Scalar) but don't fail the build on missing doc comments. -->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>

@@ -1,0 +1,14 @@
+<Project>
+  <ItemGroup>
+    <PackageVersion Remove="Bogus;Microsoft.AspNetCore.Mvc.Testing;NSubstitute;NSubstitute.Analyzers.CSharp;Shouldly;Testcontainers;xunit.v3.mtp-v2" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="Bogus" Version="35.6.5" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.11" />
+    <PackageVersion Include="NSubstitute" Version="6.2.0" />
+    <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
+    <PackageVersion Include="Shouldly" Version="4.3.0" />
+    <PackageVersion Include="Testcontainers" Version="4.14.0" />
+    <PackageVersion Include="xunit.v3.mtp-v2" Version="4.0.0" />
+  </ItemGroup>
+</Project>

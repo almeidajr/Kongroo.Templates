@@ -12,11 +12,25 @@ updates:
         patterns: ["*"]
         update-types: [minor, patch]
 
+  # The kongroo-nuget package versions live in Packages.props fragments beside
+  # src/Kongroo.SampleLib and test/Kongroo.SampleLib.Tests, glob-imported by the root
+  # Directory.Packages.props; listed explicitly below since the ecosystem needs a project
+  # file's own directory, not just an ancestor holding the import.
+  #
+  # The six adder-only fragments (kongroo-api, kongroo-worker, kongroo-cli, kongroo-lib,
+  # kongroo-test, kongroo-itest) are deliberately NOT listed: each is a lone Packages.props next
+  # to a versionless-PackageReference csproj with no Directory.Packages.props anywhere in its
+  # ancestor chain in *this* repo - that only exists once `dotnet new` copies the fragment into a
+  # scaffolded consumer repo's src/ or test/ tree. There is nothing here for the ecosystem to
+  # resolve a version against, so pointing it at those directories would not surface updates.
+  # sync-check.ps1 is the compensating control for drift between fragments that share a package.
   - package-ecosystem: nuget
     directories:
       - /
       - /templates/kongroo-sln
       - /templates/kongroo-nuget
+      - /templates/kongroo-nuget/src/Kongroo.SampleLib
+      - /templates/kongroo-nuget/test/Kongroo.SampleLib.Tests
     schedule:
       interval: weekly
     commit-message:

@@ -1,1 +1,39 @@
-<Project Sdk="Microsoft.NET.Sdk"></Project>
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--#if (packable)-->
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>Kongroo.SampleApp.Library</PackageId>
+    <Title>Kongroo.SampleApp.Library</Title>
+    <Description>A Kongroo library.</Description>
+    <Authors>José Rogério de Almeida Júnior &lt;almeidajr.vr@gmail.com&gt;</Authors>
+    <PackageTags>kongroo</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReleaseNotes>See the project's GitHub Releases for changes.</PackageReleaseNotes>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IsAotCompatible>true</IsAotCompatible>
+    <!-- Re-enable CS1591 (repo-wide NoWarn suppresses it for apps); a published library
+         documents its public API. -->
+    <NoWarn>$(NoWarn.Replace('CS1591', ''))</NoWarn>
+    <MinVerTagPrefix>v</MinVerTagPrefix>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+    <!-- Disable SourceLink outside CI where no git repo context exists -->
+    <EnableSourceControlManagerQueries Condition="'$(ContinuousIntegrationBuild)' != 'true'"
+      >false</EnableSourceControlManagerQueries>
+    <EnableSourceLink Condition="'$(ContinuousIntegrationBuild)' != 'true'">false</EnableSourceLink>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\assets\icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MinVer" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="all" />
+  </ItemGroup>
+  <!--#endif-->
+</Project>

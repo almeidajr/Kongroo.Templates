@@ -4,17 +4,12 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="MinVer" Version="7.0.0" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.400" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0" />
+    <!-- Referenced by every project from Directory.Build.props, so it has no owning project. -->
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.33.0.1635" />
   </ItemGroup>
-  <ItemGroup>
-    <!-- Test packages -->
-    <PackageVersion Include="Bogus" Version="35.6.5" />
-    <PackageVersion Include="NSubstitute" Version="6.2.0" />
-    <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
-    <PackageVersion Include="Shouldly" Version="4.3.0" />
-    <PackageVersion Include="xunit.v3.mtp-v2" Version="4.0.0" />
-  </ItemGroup>
+  <!-- Every other version lives in a Packages.props next to the project that uses it.
+       A wildcard matching no files is silently skipped, so an empty repo restores fine.
+       Any PackageVersion Update= override must go BELOW these imports to take effect. -->
+  <Import Project="$(MSBuildThisFileDirectory)src/**/Packages.props" />
+  <Import Project="$(MSBuildThisFileDirectory)test/**/Packages.props" />
 </Project>

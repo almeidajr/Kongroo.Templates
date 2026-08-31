@@ -159,7 +159,35 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "kongroo-cli run failed with exit code ${LASTEXITCODE}: $cliOutput" }
     if ($cliOutput -notmatch 'Hello, World!') { throw "kongroo-cli greet did not print the expected greeting: $cliOutput" }
 
-    # 5c. Build both images. Nothing exercised these Dockerfiles before, so a wrong COPY path or a
+    # 5c. The worker resolves TimeProvider from DI, which the host does NOT register on its own -
+    # drop the AddSingleton and the build still passes, the image still builds, and the container
+    # dies on start with "Unable to resolve service for type 'System.TimeProvider'". Only running it
+    # catches that. The sample ticks every 5s, so allow generous headroom.
+    $workerLog = Join-Path $smokeDir 'worker-run.log'
+    $worker = Start-Process dotnet -PassThru -NoNewWindow `
+        -ArgumentList 'run', '--project', 'src/Kongroo.Smoke.Ingest' `
+        -RedirectStandardOutput $workerLog -RedirectStandardError (Join-Path $smokeDir 'worker-run.err')
+    try {
+        $ticked = $false
+        $deadline = (Get-Date).AddSeconds(90)
+        while ((Get-Date) -lt $deadline -and -not $worker.HasExited) {
+            Start-Sleep -Milliseconds 500
+            if ((Test-Path $workerLog) -and (Select-String -Path $workerLog -Pattern 'Worker ran at' -Quiet)) {
+                $ticked = $true
+                break
+            }
+        }
+    }
+    finally {
+        if (-not $worker.HasExited) { $worker.Kill($true) }
+    }
+    if (-not $ticked) {
+        $tail = (Get-Content $workerLog -Tail 20 -ErrorAction SilentlyContinue) -join "`n"
+        $err = (Get-Content (Join-Path $smokeDir 'worker-run.err') -Tail 20 -ErrorAction SilentlyContinue) -join "`n"
+        throw "kongroo-worker never logged a tick:`n$tail`n$err"
+    }
+
+    # 5d. Build both images. Nothing exercised these Dockerfiles before, so a wrong COPY path or a
     # failing restore shipped silently. The build context is the repo root because CPM needs
     # Directory.Packages.props, which is also why .dockerignore lives there and not beside a csproj.
     if ((Get-Command docker -ErrorAction SilentlyContinue) -and (docker info 2>$null)) {

@@ -37,16 +37,15 @@ dotnet new kongroo-itest   -n Kongroo.SampleApp.IntegrationTests -o test/Kongroo
 
 ## Package versions
 
-`Directory.Packages.props` holds only the repo-wide analyzer and two glob imports. Each project owns
-its own versions in a `Packages.props` next to its `.csproj`, and adders ship theirs already filled
-in — so adding a project needs no version hunting.
+`Directory.Packages.props` is the single source of every package version — Central Package
+Management, one file, one version per package. Project files reference packages without a version.
 
-Two things to know:
+It ships with every version the Kongroo adders can reference, not just the ones this repo uses, so
+`dotnet new kongroo-worker` (or any other adder) works without editing it first. An entry nothing
+references costs nothing to restore.
 
-- `dotnet package add` always writes to the root `Directory.Packages.props`, never into a project's
-  fragment. That works, it just does not stay tidy on its own.
-- A `PackageVersion Update="…"` override must sit **below** the `<Import>` lines in the root file, or
-  it silently does nothing.
+To change a version, edit it here; NuGet rejects a duplicate `PackageVersion`, so the file cannot
+disagree with itself.
 
 ## Publishing packages
 

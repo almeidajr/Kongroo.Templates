@@ -23,7 +23,7 @@
       "modifiers": [
         {
           "condition": "(!packable)",
-          "exclude": ["README.md", "PublicAPI.Shipped.txt", "PublicAPI.Unshipped.txt", "Packages.props"]
+          "exclude": ["README.md", "PublicAPI.Shipped.txt", "PublicAPI.Unshipped.txt"]
         }
       ]
     }

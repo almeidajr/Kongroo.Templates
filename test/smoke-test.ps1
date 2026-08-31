@@ -100,7 +100,6 @@ try {
 
     $adders = @(
         @{ Template = 'kongroo-api';     Name = 'Kongroo.Smoke.Api';       Dir = 'src' },
-        @{ Template = 'kongroo-api';     Name = 'Kongroo.Smoke.Admin';     Dir = 'src' },
         @{ Template = 'kongroo-lib';     Name = 'Kongroo.Smoke.Domain';    Dir = 'src' },
         @{ Template = 'kongroo-test';    Name = 'Kongroo.Smoke.UnitTests'; Dir = 'test' },
         @{ Template = 'kongroo-itest';   Name = 'Kongroo.Smoke.E2ETests';  Dir = 'test' },
@@ -117,27 +116,24 @@ try {
         if ($LASTEXITCODE -ne 0) { throw "sln add failed for $($adder.Name)" }
     }
 
-    # The observability=false path is otherwise never built. A .props conditional the template
-    # engine ignored would leave OpenTelemetry PackageVersion entries behind with no matching
-    # PackageReference, or drop needed ones and fail restore with NU1010.
-    dotnet new kongroo-worker -n Kongroo.Smoke.Plain -o src/Kongroo.Smoke.Plain --observability false
-    if ($LASTEXITCODE -ne 0) { throw 'kongroo-worker --observability false scaffold failed' }
-    dotnet sln $slnx add src/Kongroo.Smoke.Plain/Kongroo.Smoke.Plain.csproj
-    if ($LASTEXITCODE -ne 0) { throw 'sln add Plain failed' }
-    if (Select-String -Path (Join-Path $smokeDir 'src/Kongroo.Smoke.Plain/Packages.props') `
-            -Pattern 'OpenTelemetry' -Quiet) {
-        throw 'observability=false left OpenTelemetry PackageVersion entries in Packages.props'
-    }
-
-    # Same regression, API side. kongroo-api's OpenTelemetry set is not the worker's - it also
-    # carries OpenTelemetry.Instrumentation.AspNetCore - so the worker pass above does not cover it.
-    dotnet new kongroo-api -n Kongroo.Smoke.ApiPlain -o src/Kongroo.Smoke.ApiPlain --observability false
-    if ($LASTEXITCODE -ne 0) { throw 'kongroo-api --observability false scaffold failed' }
-    dotnet sln $slnx add src/Kongroo.Smoke.ApiPlain/Kongroo.Smoke.ApiPlain.csproj
-    if ($LASTEXITCODE -ne 0) { throw 'sln add ApiPlain failed' }
-    if (Select-String -Path (Join-Path $smokeDir 'src/Kongroo.Smoke.ApiPlain/Packages.props') `
-            -Pattern 'OpenTelemetry' -Quiet) {
-        throw 'observability=false left OpenTelemetry PackageVersion entries in Packages.props'
+    # observability=false is otherwise never built, and the failure is silent: every OpenTelemetry
+    # version now sits in the central Directory.Packages.props, so a conditional the template engine
+    # failed to strip would leave real PackageReferences that restore and build clean - shipping
+    # OpenTelemetry to someone who asked for none.
+    foreach ($plain in @(
+            @{ Template = 'kongroo-worker'; Name = 'Kongroo.Smoke.Plain' },
+            @{ Template = 'kongroo-api'; Name = 'Kongroo.Smoke.ApiPlain' })) {
+        dotnet new $plain.Template -n $plain.Name -o "src/$($plain.Name)" --observability false
+        if ($LASTEXITCODE -ne 0) { throw "$($plain.Template) --observability false scaffold failed" }
+        dotnet sln $slnx add "src/$($plain.Name)/$($plain.Name).csproj"
+        if ($LASTEXITCODE -ne 0) { throw "sln add $($plain.Name) failed" }
+        $csproj = Join-Path $smokeDir "src/$($plain.Name)/$($plain.Name).csproj"
+        if (Select-String -Path $csproj -Pattern 'OpenTelemetry' -Quiet) {
+            throw "observability=false left OpenTelemetry PackageReferences in $($plain.Name).csproj"
+        }
+        if (Select-String -Path $csproj -Pattern 'DefineConstants' -Quiet) {
+            throw "observability=false left the observability DefineConstants in $($plain.Name).csproj"
+        }
     }
 
     # sourceName is Kongroo.SampleApp.Console and the body says Console.WriteLine. dotnet new
@@ -177,7 +173,7 @@ try {
 
     # The packaging PackageReferences are gated by the same #if as these files, so a stray file
     # here fails nothing at build time - only this assertion catches it.
-    foreach ($f in 'README.md', 'PublicAPI.Shipped.txt', 'PublicAPI.Unshipped.txt', 'Packages.props') {
+    foreach ($f in 'README.md', 'PublicAPI.Shipped.txt', 'PublicAPI.Unshipped.txt') {
         if (Test-Path (Join-Path $smokeDir "src/Kongroo.Smoke.Domain/$f")) {
             throw "plain kongroo-lib emitted packaging-only file $f"
         }

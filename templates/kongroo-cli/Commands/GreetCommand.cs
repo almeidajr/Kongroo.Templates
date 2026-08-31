@@ -17,7 +17,6 @@ public sealed class GreetCommand(IAnsiConsole console) : AsyncCommand<GreetComma
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        // Interpolated markup escapes the hole, so a name containing '[' cannot break rendering.
         console.MarkupLineInterpolated($"Hello, {settings.Name}!");
 
         return Task.FromResult(0);

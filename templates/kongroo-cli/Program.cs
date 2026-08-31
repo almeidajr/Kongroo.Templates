@@ -5,8 +5,6 @@ using Spectre.Console.Cli;
 
 var services = new ServiceCollection();
 
-// Register your own services here; commands resolve through the registrar below.
-
 var app = new CommandApp(new TypeRegistrar(services));
 
 app.Configure(CommandConfiguration.Apply);

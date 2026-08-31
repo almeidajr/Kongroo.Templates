@@ -1,7 +1,5 @@
 using System.Globalization;
 using Kongroo.SampleApp.Worker;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Serilog;
 #if (observability)
 using OpenTelemetry.Metrics;

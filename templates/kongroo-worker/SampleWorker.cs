@@ -1,10 +1,7 @@
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-
 namespace Kongroo.SampleApp.Worker;
 
 /// <summary>Placeholder background service — replace with your own work loop.</summary>
-public sealed class SampleWorker(ILogger<SampleWorker> logger) : BackgroundService
+public sealed class SampleWorker(ILogger<SampleWorker> logger, TimeProvider timeProvider) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

@@ -1,8 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-  </PropertyGroup>
-
+<Project Sdk="Microsoft.NET.Sdk.Worker">
   <!--#if (observability)-->
   <PropertyGroup>
     <DefineConstants>$(DefineConstants);observability</DefineConstants>
@@ -10,6 +6,8 @@
   <!--#endif-->
 
   <ItemGroup>
+    <!-- The Worker SDK generates global usings for Microsoft.Extensions.* but brings no packages,
+         so dropping this reference fails the build inside a generated file. -->
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Serilog.Enrichers.Environment" />
     <PackageReference Include="Serilog.Enrichers.Process" />
@@ -23,11 +21,5 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
     <!--#endif-->
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- Microsoft.NET.Sdk, unlike the Web SDK, does not treat appsettings as content. -->
-    <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="appsettings.Development.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

@@ -9,12 +9,12 @@
        restore; they only pin a version if something pulls the package in transitively. -->
 
   <ItemGroup Label="Analyzers">
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.33.0.1635" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.34.0.3385" />
   </ItemGroup>
 
   <ItemGroup Label="Packaging (kongroo-lib --packable)">
     <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.400" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.401" />
     <PackageVersion Include="MinVer" Version="8.0.0" />
   </ItemGroup>
 
@@ -28,7 +28,7 @@
     <PackageVersion Include="Spectre.Console.Cli.Testing" Version="0.55.0" />
     <PackageVersion Include="Spectre.Console.Testing" Version="0.57.2" />
     <PackageVersion Include="Testcontainers" Version="4.14.0" />
-    <PackageVersion Include="xunit.v3.mtp-v2" Version="4.0.0" />
+    <PackageVersion Include="xunit.v3.mtp-v2" Version="4.0.1" />
   </ItemGroup>
 
   <ItemGroup Label="Hosting, logging and diagnostics">

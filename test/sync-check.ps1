@@ -1,8 +1,12 @@
 #!/usr/bin/env pwsh
+# -Fix mirrors the shared files from kongroo-nuget onto kongroo-sln. kongroo-nuget is the
+# canonical copy: it is the only one holding projects, so it is the only one Dependabot sees.
+param([switch]$Fix)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 
 $drift = @()
+$fixed = @()
 
 # --- 1. kongroo-nuget shared conventions vs. kongroo-sln ---
 # These files are byte-identical copies; any drift means one scaffolder is out of date.
@@ -35,10 +39,15 @@ foreach ($f in $sharedFiles) {
     $a = Join-Path $nugetDir $f
     $b = Join-Path $slnDir $f
     if (-not (Test-Path $a)) { $drift += "MISSING in kongroo-nuget: $f"; continue }
-    if (-not (Test-Path $b)) { $drift += "MISSING in kongroo-sln: $f"; continue }
-    if ((Get-FileHash $a).Hash -ne (Get-FileHash $b).Hash) {
-        $drift += "DRIFT: templates/kongroo-nuget/$f differs from templates/kongroo-sln/$f"
+    if ((Test-Path $b) -and (Get-FileHash $a).Hash -eq (Get-FileHash $b).Hash) { continue }
+    if ($Fix) {
+        New-Item -ItemType Directory -Force -Path (Split-Path $b -Parent) | Out-Null
+        Copy-Item $a $b -Force
+        $fixed += "templates/kongroo-sln/$f"
+        continue
     }
+    if (-not (Test-Path $b)) { $drift += "MISSING in kongroo-sln: $f"; continue }
+    $drift += "DRIFT: templates/kongroo-nuget/$f differs from templates/kongroo-sln/$f"
 }
 
 # --- 2. release.yml: identical apart from each template's own sourceName ---
@@ -81,6 +90,10 @@ foreach ($name in $actions.Keys | Sort-Object) {
     $drift += "ACTION DRIFT: $name pinned at $detail"
 }
 
+if ($fixed) {
+    Write-Host "MIRRORED from kongroo-nuget:" -ForegroundColor Yellow
+    $fixed | ForEach-Object { Write-Host "  $_" -ForegroundColor Yellow }
+}
 if ($drift) {
     $drift | ForEach-Object { Write-Error $_ }
     exit 1

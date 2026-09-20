@@ -15,8 +15,8 @@ importers:
         specifier: ^21.2.2
         version: 21.2.2
       prettier:
-        specifier: ^3.9.6
-        version: 3.9.6
+        specifier: ^3.9.7
+        version: 3.9.7
 
 packages:
 
@@ -138,8 +138,8 @@ packages:
   argparse@2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
 
-  argue-cli@3.1.0:
-    resolution: {integrity: sha512-DhBpBfXL4SS2uC0N922MMajKR3CdrTG0u2or1PNYgXMsrSzViJrbtvT0nCLlLGUI0plam/ZZCs7aAauHtW9thw==}
+  argue-cli@3.2.0:
+    resolution: {integrity: sha512-VipTB0gXgGIFO2Rg9yEVN5wLt2AurJcZqDbgmYSwPwsykhLrQhs240/bfceev4w68lI8JshoOJIk9uW7tFzROw==}
     engines: {node: '>=22'}
 
   callsites@3.1.0:
@@ -261,8 +261,8 @@ packages:
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
-  prettier@3.9.6:
-    resolution: {integrity: sha512-OpN0zzVdiaiAhxpuuj5efpIS4sY9j7bY6uR5mnj5yPzGkdkjNKSJeUThPb60Jw29QuAZgA4o+/iB49kFiaBX6g==}
+  prettier@3.9.7:
+    resolution: {integrity: sha512-T3mF5P7HFzZVLDQuCUNtJj6WK1pcpLMweMNUVwGb01bLNkH9AkKxtZvmInw8K6bnn2O3d6/5RHl6zSHiBAD0Og==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -475,7 +475,7 @@ snapshots:
 
   argparse@2.0.1: {}
 
-  argue-cli@3.1.0: {}
+  argue-cli@3.2.0: {}
 
   callsites@3.1.0: {}
 
@@ -496,7 +496,7 @@ snapshots:
   conventional-commits-parser@7.1.2:
     dependencies:
       '@simple-libs/stream-utils': 2.0.0
-      argue-cli: 3.1.0
+      argue-cli: 3.2.0
 
   cosmiconfig-typescript-loader@6.3.0(@types/node@26.0.1)(cosmiconfig@9.0.2(typescript@6.0.3))(typescript@6.0.3):
     dependencies:
@@ -576,7 +576,7 @@ snapshots:
 
   picocolors@1.1.1: {}
 
-  prettier@3.9.6: {}
+  prettier@3.9.7: {}
 
   require-from-string@2.0.2: {}
 

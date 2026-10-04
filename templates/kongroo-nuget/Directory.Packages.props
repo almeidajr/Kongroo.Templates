@@ -9,7 +9,7 @@
        restore; they only pin a version if something pulls the package in transitively. -->
 
   <ItemGroup Label="Analyzers">
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.34.0.3385" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.35.0.4138" />
   </ItemGroup>
 
   <ItemGroup Label="Packaging (kongroo-lib --packable)">
